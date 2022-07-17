@@ -105,6 +105,10 @@ if [ $? -eq 1 ] ; then
 			  echo '/etc/ssh/sshd_config was not changed'
 fi
 
+# Install git, enabling easy download/updates of scripts
+apt-get install -y git
+
+# For certbot
 apt-get install -y certbot python-certbot-nginx
 
 # (run certbot using script from build-linode-cert.sh, or
@@ -122,8 +126,9 @@ apt-get install -y certbot python-certbot-nginx
 #   mv /etc/letsencrypt/ /etc/letsencrypt-old/
 #   tar -xzf ~/letsencrypt.tgz
 #   systemctl reload nginx
-#
 
+# TODO: This assumes we're a mirror that will use rsync to get data
+# elsewhere - we eventually need to NOT assume that.
 # Set up crontabs - note that "certbot renew"
 #     requires that build-linode-cert.sh be run
 crontab -u root -r

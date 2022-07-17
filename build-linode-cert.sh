@@ -18,17 +18,13 @@
 #
 
 # Customize for this machine
-# this_ip=172.104.21.165
-this_ip=$1
-# this_ip6=2600:3c03::f03c:92ff:fe83:1d9f
-this_ip6=$2
-# this_domain=linode2.metamath.org
-this_domain=$3
-email=nm@alum.mit.edu
+this_domain="$(hostname)"
+# email=nm@alum.mit.edu
+email=dwheeler@dwheeler.com
 
+certbot run -n --nginx --agree-tos --redirect -m "${email}" \
+	  -d "${this_domain}"
 
-certbot run -n --nginx --agree-tos --redirect -m ${email} \
-	  -d ${this_domain}
 #  - Congratulations! Your certificate and chain have been saved at:
 #    /etc/letsencrypt/live/linode2.metamath.org/fullchain.pem
 #    Your key file has been saved at:
@@ -44,5 +40,3 @@ certbot run -n --nginx --agree-tos --redirect -m ${email} \
 #    making regular backups of this folder is ideal.
 
 # At this point, https://${this_domain} should work from any browser
-
-

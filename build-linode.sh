@@ -1,22 +1,15 @@
 #!/bin/sh
-# Script to create a Metamath mirror on an empty Linode VM
-# Revision history:
-# 20-Jun-2021 (nm) - created
+# Script to create a Metamath mirror on an empty Debian VM
 #
-# 1. Login as root on a freshly created Linode,
-#    download this script, and run as follows under root:
-#        ./build-linode.sh <ip> <ip6> <domain>
-#            where
-#               <ip> = IP address e.g. "173.255.232.114"
-#               <ip6> = IPV6 address e.g. "2600:3c03::f03c:92ff:fe21:a2a7"
-#               <domain> = domain name e.g. "ssl.metamath.org"
-#        Note:  this gets the site working in http mode; it downloads the
-#            entire Metamath site with rsync, taking ~1hr to complete
+# 1. Login as root on a freshly created VM, and set hostname:
+#    hostnamectl set-hostname DOMAIN_NAME
+# 2. Download and run this script, ./build-linode
 # 2. Update DNS A record for "us.metamath.org" to point to <ip>; wait
 #    until "host us.metamath.org" returns this <ip>
 # 3. Run
 #        ./build-linode-cert.sh <ip> <ip6> <domain>
 #
+# Note: downloading the Metamath site with rsync takes ~1 hour
 
 # Example creating an empty Linode VM:
 #   https://login.linode.com/
@@ -37,7 +30,8 @@
 #
 # ssh root@173.255.232.114
 # Run build-linode.sh on freshly-created VM
-# Do not run build-linode.sh twice!  If it fails, delete the VM and start over.
+
+# NOTE: This script is *SPECIFICALLY* designed to be able to be re-run.
 
 # Instructions for updating DNS at domainmonger.com:
 #
@@ -69,27 +63,13 @@
 # http://nateserk.com/2019/tech/migrate-letsencrypt-ssl-certificates-to-a-different-server-guide/
 
 # Customize for this machine
-# this_ip=172.104.21.165
-this_ip=$1
-# this_ip6=2600:3c03::f03c:92ff:fe83:1d9f
-this_ip6=$2
-# this_domain=linode2.metamath.org
-this_domain=$3
-email=nm@alum.mit.edu
 
-# Setting hostname to something other than ${this-domain} causes sudo to fail
-this_hostname=${this_domain}
-hostnamectl set-hostname ${this_hostname}
-grep -q "${this_domain}" /etc/hosts
-if [ $?  -eq 1 ] ; then
-	  echo "Updating /etc/hosts..."
-	    cp -p /etc/hosts /etc/hosts-old
-	      echo "${this_ip}   ${this_domain}" >> /etc/hosts
-	        echo "${this_ip6}   ${this_domain}" >> /etc/hosts
-	else
-		  # If /etc/hosts already has ${this_hostname} then don't add it again
-		    echo "/etc/hosts was not changed"
-fi
+# At one time this script set the hostname using:
+# hostnamectl set-hostname us.metamath.org
+# (replace us.metamath.org with the needed hostname).
+# However, to make it easy to rerun, we no longer do that.
+
+echo 'Note: we assume you have already run hostnamectl set-hostname DOMAIN_NAME'
 
 # https://www.linode.com/docs/guides/getting-started/#update-your-system-s-hosts-file
 # For Ubuntu:  "You may be prompted to make a menu selection when the
@@ -102,14 +82,6 @@ apt-get install nginx -y
 
 # Install rsync to update site
 apt-get install -y rsync
-
-# Create a script to update this Metamath site
-cat > /root/mirrorsync.sh << EOF
-#!/bin/sh
-rsync -vrltS -z --delete --delete-after --block-size=400 \\
-    rsync://rsync.metamath.org/metamath /var/www/html
-EOF
-chmod +x /root/mirrorsync.sh
 
 # Other utilities to assist future maintenance
 apt-get -y install gcc
@@ -133,11 +105,8 @@ if [ $? -eq 1 ] ; then
 			  echo '/etc/ssh/sshd_config was not changed'
 fi
 
+apt-get install -y certbot python-certbot-nginx
 
-# Setting hostname to something other than ${this-domain} causes sudo to fail
-this_hostname=${this_domain}
-hostnamectl set-hostname ${this_hostname}
-apt-get install certbot python-certbot-nginx -y
 # (run certbot using script from build-linode-cert.sh, or
 #  copy over files from another server
 #
@@ -155,8 +124,6 @@ apt-get install certbot python-certbot-nginx -y
 #   systemctl reload nginx
 #
 
-
-
 # Set up crontabs - note that "certbot renew"
 #     requires that build-linode-cert.sh be run
 crontab -u root -r
@@ -170,7 +137,5 @@ echo "0 5 * * * updatedb" >> /root/tmpcron
 crontab -u root /root/tmpcron
 rm /root/tmpcron
 
-
 # Do the initial site load (will take a while) - or just wait for cron
-/root/mirrorsync.sh
-
+# /root/mirrorsync.sh

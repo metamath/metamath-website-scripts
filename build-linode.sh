@@ -16,7 +16,7 @@
 #     Log in:  nmegill <passwd>
 #   https://cloud.linode.com/linodes
 #     Click on Create a Linode
-#     Select Images "Debian 10", Region "Newark, NJ", Linode Plan "Nanode 1GB",
+#     Select Images "Debian 11", Region "Newark, NJ", Linode Plan "Nanode 1GB",
 #         root password, optionally change Linode Label
 #         to e.g. debian-us-metamath-org
 #       Here is what the console showed:
@@ -88,22 +88,6 @@ apt-get -y install gcc
 apt-get -y install locate
 apt-get -y install zip
 apt-get -y install rlwrap
-
-# Try to solve annoying ssh timeouts that give the message:
-#     "client_loop: send disconnect: Connection reset by peer"
-grep -q '^TCPKeepAlive' /etc/ssh/sshd_config
-if [ $? -eq 1 ] ; then
-	  echo 'Adding keep-alive to /etc/ssh/sshd_config...'
-	    cp -p /etc/ssh/sshd_config /etc/ssh/sshd_config-old
-	      echo 'TCPKeepAlive yes' >> /etc/ssh/sshd_config
-	        echo 'ClientAliveInterval 60' >> /etc/ssh/sshd_config
-		  echo 'ClientAliveCountMax 3' >> /etc/ssh/sshd_config
-		    systemctl restart ssh.service
-		      # or:  /etc/init.d/ssh restart
-	      else
-		        # If sshd_config already has keep-alive then don't add it again
-			  echo '/etc/ssh/sshd_config was not changed'
-fi
 
 # Install git, enabling easy download/updates of scripts
 apt-get install -y git

@@ -141,6 +141,8 @@ cp -p us.metamath.org /etc/nginx/sites-available/
 ln -s /etc/nginx/sites-available/us.metamath.org /etc/nginx/sites-enabled/
 systemctl restart nginx
 
+cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/
+
 # TODO: This assumes we're a mirror that will use rsync to get data
 # elsewhere - we eventually need to NOT assume that.
 # Set up crontabs - note that "certbot renew"

@@ -54,10 +54,9 @@ apt-get install -y rsync
 
 # Other utilities to assist future maintenance
 
-apt-get -y install gcc
-apt-get -y install locate
-apt-get -y install zip
-apt-get -y install rlwrap
+apt-get -y install locate zip
+
+apt-get -y install gcc rlwrap
 
 # Install sshd configuration tweaks
 cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/

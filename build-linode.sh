@@ -73,10 +73,10 @@ cat > ,tmpcron << END
 # Run certbot renewal once a month
 0 3 1 * * certbot renew
 # Update file database daily with "locate" package
-echo "0 5 * * * updatedb
+0 5 * * * updatedb
 END
 crontab -u root ,tmpcron
 rm ,tmpcron
 
 # Do the initial site load (will take a while) - or just wait for cron
-# /root/mirrorsync.sh
+echo 'You may run this down to force resync: /root/mirrorsync.sh'

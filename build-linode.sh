@@ -111,15 +111,6 @@ apt-get install -y git
 # For certbot
 apt-get install -y certbot python-certbot-nginx
 
-# Begin set up of git, so that we can use "git pull" to get future versions.
-# The first "git pull" may have a complication (we may have to remove a
-# conflicting file), but this is easier than other bootstrapping approaches.
-if [ ! -d .git ]; then
-  git clone -n https://github.com/metamath/metamath-website-scripts.git
-  mv metamath-website-scripts/.git .git
-fi
-
-
 # Automatically install security updates, per:
 # https://www.linode.com/docs/guides/how-to-configure-automated-security-updates-debian/
 # We don't need "sudo"; we assume we're running as root

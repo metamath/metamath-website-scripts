@@ -16,8 +16,23 @@ You then need to set up a machine. Currently us.metamath.org is
 set up as a machine on Linode. For this to work:
 
 * create a linode instance.
-* copy the script <build-linode.sh> to `/root`
 * log in as root
 * Set up its hostname, e.g. `hostnamectl set-hostname us.metamath.org`
   (`hostnamectl` adjusts other files like `/etc/hostname`)
-* run `build-linode.sh`
+* Install git and the scripts using git:
+
+~~~~
+apt-get install -y git
+if [ ! -d .git ]; then
+  git clone -n https://github.com/metamath/metamath-website-scripts.git
+  mv metamath-website-scripts/.git .git
+  git checkout main
+  rmdir metamath-website-scripts
+fi
+~~~~
+
+Then run the install script:
+run `build-linode.sh`
+
+
+You can always update the scripts later with `git pull`

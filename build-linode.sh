@@ -41,11 +41,11 @@ apt-get install -y certbot python-certbot-nginx
 # Install nginx configuration file for its HOSTNAME, tweaking it
 # if the host isn't us.metamath.org.
 
-mkdir -p "/var/www/$(HOSTNAME)/html" # Where we'll store HTML files
+mkdir -p "/var/www/${HOSTNAME}/html" # Where we'll store HTML files
 nginx_config="/etc/nginx/sites-available/$HOSTNAME" # Config file location
 cp -p us.metamath.org "${nginx_config}"
 # This uses GNU sed extension -i
-sed -E -i '' -e 's/us\.metamath\.org/'"HOSTNAME"'/g' "${nginx_config}"
+sed -E -i '' -e 's/us\.metamath\.org/'"${HOSTNAME}"'/g' "${nginx_config}"
 ln -f -s "${nginx_config}" /etc/nginx/sites-enabled/
 systemctl restart nginx
 

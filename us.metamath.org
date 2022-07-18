@@ -75,6 +75,6 @@ server {
 	listen 80 ;
 	listen [::]:80 ;
 	server_name us.metamath.org;
-	# Eventually use 301, but let's make sure everything works first!
-	return 302 https://$host$request_uri;
+	# Use 302 for temporary redirect, use 301 to tell people "use HTTPS".
+	return 301 https://$host$request_uri;
 }

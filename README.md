@@ -12,32 +12,6 @@ We currently have domainmonger set up so any request to
 we could just redirect to the relevant us.metamath.org page
 if that would be easier.
 
-You then need to set up a machine. Currently us.metamath.org is
-set up as a machine on Linode. For this to work:
-
-* create a linode instance.
-* log in as root
-* Set up its hostname, e.g. `hostnamectl set-hostname us.metamath.org`
-  (`hostnamectl` adjusts other files like `/etc/hostname`)
-* Install git and the scripts using git:
-
-~~~~
-apt-get install -y git
-if [ ! -d .git ]; then
-  git clone -n https://github.com/metamath/metamath-website-scripts.git
-  mv metamath-website-scripts/.git .git
-  git checkout main
-  rmdir metamath-website-scripts
-fi
-~~~~
-
-Then run the install script:
-
-~~~~sh
-./build-linode.sh
-~~~~
-
-You can always update the scripts later with `git pull`
-and then re-run the install script.
+See `INSTALL.md` for installation instructions.
 
 The `us.metamath.org` file is the configuration file for the nginx web server.

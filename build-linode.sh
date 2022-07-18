@@ -1,137 +1,73 @@
 #!/bin/sh
 # Script to create a Metamath mirror on an empty Debian VM
-#
-# 1. Login as root on a freshly created VM, and set hostname:
-#    hostnamectl set-hostname DOMAIN_NAME
-# 2. Download and run this script, ./build-linode
-# 2. Update DNS A record for "us.metamath.org" to point to <ip>; wait
-#    until "host us.metamath.org" returns this <ip>
-# 3. Run
-#        ./build-linode-cert.sh <ip> <ip6> <domain>
-#
-# Note: downloading the Metamath site with rsync takes ~1 hour
-
-# Example creating an empty Linode VM:
-#   https://login.linode.com/
-#     Log in:  nmegill <passwd>
-#   https://cloud.linode.com/linodes
-#     Click on Create a Linode
-#     Select Images "Debian 11", Region "Newark, NJ", Linode Plan "Nanode 1GB",
-#         root password, optionally change Linode Label
-#         to e.g. debian-us-metamath-org
-#       Here is what the console showed:
-#         Linode Label:  debian-us-metamath-org
-#         Linode ID: 27874250
-#         Created: 2021-06-20 19:00
-#         2600:3c03::f03c:92ff:fe21:a2a7/128
-#         root password:  <root-passwd>
-#         SSH Access:   ssh root@173.255.232.114
-#         LISH Console via SSH:  ssh -t nmegill@lish-newark.linode.com debian-us-east-001
-#
-# ssh root@173.255.232.114
-# Run build-linode.sh on freshly-created VM
-
+# Uses HOSTNAME for hostname.
+# See INSTALL.md
 # NOTE: This script is *SPECIFICALLY* designed to be able to be re-run.
-
-# Instructions for updating DNS at domainmonger.com:
-#
-# domainmonger.com
-#     Login
-#         nm@alum.mit.edu
-#         <passwd>
-#         Login
-#     Domains  (3rd from left in blue bar, not the black bar above it)
-#       -> My Domains
-#         (metamath.org) -> (wrench symbol) -> Manage domain
-#            Manage
-#              DNS Management
-#                Manage A Records
-#                  ADD A NEW A RECORD
-#                     -or-
-#                  EDIT (in row for existing record)
-#                     -or-
-#                  DELETE (in row for existing record)
-#                Domainmonger has these notes:
-#                    To specify any Host Name, use the asterisk "*"
-#                    To specify no Host Name, use the at char "@"
-#
-
-# Useful links (suggested by Cris, although I haven't tried the procedures)
-# https://www.linode.com/docs/guides/remote-access#transferring-ip-addresses
-# https://certbot.eff.org/docs/using.html#manual
-# https://community.letsencrypt.org/t/move-to-another-server/77985
-# http://nateserk.com/2019/tech/migrate-letsencrypt-ssl-certificates-to-a-different-server-guide/
-
-# Customize for this machine
-
-# At one time this script set the hostname using:
-# hostnamectl set-hostname us.metamath.org
-# (replace us.metamath.org with the needed hostname).
-# However, to make it easy to rerun, we no longer do that.
 
 echo 'Note: we assume you have already run hostnamectl set-hostname DOMAIN_NAME'
 
+# Ensure HOSTNAME is set (this makes shellcheck happy)
+: "${HOSTNAME:="$(hostname)"}"
+echo "Hostname: $HOSTNAME"
+
+# Make sure we're installing the currently-available packages.
+# Linode-specific information about this is at:
 # https://www.linode.com/docs/guides/getting-started/#update-your-system-s-hosts-file
 # For Ubuntu:  "You may be prompted to make a menu selection when the
 # Grub package is updated on Ubuntu.  If prompted, select keep the local
 # version currently installed."  -y should be OK for Debian.  See
 # To use apt instead?: "sudo DEBIAN_FRONTEND=noninteractive apt upgrade"
+
 apt-get update -y && apt-get upgrade -y
 
-apt-get install nginx -y
+# Install git, enabling easy download/updates of scripts.
+# It should already be there, but let's make sure of it.
+apt-get install -y git
+
+# Automatically install security updates, per:
+# https://www.linode.com/docs/guides/how-to-configure-automated-security-updates-debian/
+# We don't need "sudo"; we assume we're running this script as root
+
+apt install -y unattended-upgrades
+systemctl enable unattended-upgrades
+systemctl start unattended-upgrades
+
+# Install web server (nginx)
+apt-get install -y nginx
+
+# Install certbot (so we get TLS certificates for the web server)
+apt-get install -y certbot python-certbot-nginx
+
+# Install nginx configuration file for its HOSTNAME, tweaking it
+# if the host isn't us.metamath.org.
+
+mkdir -p "/var/www/$(HOSTNAME)/html" # Where we'll store HTML files
+nginx_config="/etc/nginx/sites-available/$HOSTNAME" # Config file location
+cp -p us.metamath.org "${nginx_config}"
+sed -E -I -e 's/us\.metamath\.org/'"HOSTNAME"'/g' "${nginx_config}"
+ln -f -s "${nginx_config}" /etc/nginx/sites-enabled/
+systemctl restart nginx
 
 # Install rsync to update site
 apt-get install -y rsync
 
 # Other utilities to assist future maintenance
+
 apt-get -y install gcc
 apt-get -y install locate
 apt-get -y install zip
 apt-get -y install rlwrap
 
-# Install git, enabling easy download/updates of scripts
-apt-get install -y git
-
-# For certbot
-apt-get install -y certbot python-certbot-nginx
-
-# Automatically install security updates, per:
-# https://www.linode.com/docs/guides/how-to-configure-automated-security-updates-debian/
-# We don't need "sudo"; we assume we're running as root
-apt install -y unattended-upgrades
-systemctl enable unattended-upgrades
-systemctl start unattended-upgrades
-
-# (run certbot using script from build-linode-cert.sh, or
-#  copy over files from another server
-#
-#     cd /etc
-#     tar -czf ~/letsencrypt.tgz letsencrypt
-#     cp /etc/nginx/sites-available/default ~/default
-#
-# then sftp them to this server, then run
-#
-#   cp -p /etc/nginx/sites-available/default /etc/nginx/sites-available/default-old
-#   cp -p ~/default /etc/nginx/sites-available/
-#   cd /etc
-#   mv /etc/letsencrypt/ /etc/letsencrypt-old/
-#   tar -xzf ~/letsencrypt.tgz
-#   systemctl reload nginx
-
-# TODO: If this isn't the us.metamath.org site, we need to tweak
-# the configuration file & should use a different name in /etc.
-
-cp -p us.metamath.org /etc/nginx/sites-available/
-ln -s /etc/nginx/sites-available/us.metamath.org /etc/nginx/sites-enabled/
-systemctl restart nginx
-
+# Install sshd configuration tweaks
 cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/
 
 # TODO: This assumes we're a mirror that will use rsync to get data
 # elsewhere - we eventually need to NOT assume that.
+
 # Set up crontabs - note that "certbot renew"
 #     requires that build-linode-cert.sh be run
 # Keep Metamath site updated daily
+
 cat > ,tmpcron << END
 7 4 * * * /root/mirrorsync.sh
 # Run certbot renewal once a month

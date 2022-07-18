@@ -18,9 +18,8 @@
 #
 
 # Customize for this machine
-this_domain="$(hostname)"
-# email=nm@alum.mit.edu
-email=dwheeler@dwheeler.com
+this_domain="${HOSTNAME:-"$(hostname)"}"
+email="${POC_EMAIL:-'dwheeler.com'}"
 
 certbot run -n --nginx --agree-tos --redirect -m "${email}" \
 	  -d "${this_domain}"

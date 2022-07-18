@@ -1,0 +1,16 @@
+# Here are notes on how to install certbot manually, we don't do that:
+# (run certbot using script from build-linode-cert.sh, or
+#  copy over files from another server
+#
+#     cd /etc
+#     tar -czf ~/letsencrypt.tgz letsencrypt
+#     cp /etc/nginx/sites-available/default ~/default
+#
+# then sftp them to this server, then run
+#
+#   cp -p /etc/nginx/sites-available/default /etc/nginx/sites-available/default-old
+#   cp -p ~/default /etc/nginx/sites-available/
+#   cd /etc
+#   mv /etc/letsencrypt/ /etc/letsencrypt-old/
+#   tar -xzf ~/letsencrypt.tgz
+#   systemctl reload nginx

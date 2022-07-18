@@ -134,6 +134,13 @@ systemctl start unattended-upgrades
 #   tar -xzf ~/letsencrypt.tgz
 #   systemctl reload nginx
 
+# TODO: If this isn't the us.metamath.org site, we need to tweak
+# the configuration file & should use a different name in /etc.
+
+cp -p us.metamath.org /etc/nginx/sites-available/
+ln -s /etc/nginx/sites-available/us.metamath.org /etc/nginx/sites-enabled/
+systemctl restart nginx
+
 # TODO: This assumes we're a mirror that will use rsync to get data
 # elsewhere - we eventually need to NOT assume that.
 # Set up crontabs - note that "certbot renew"

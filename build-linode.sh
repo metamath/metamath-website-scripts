@@ -111,6 +111,22 @@ apt-get install -y git
 # For certbot
 apt-get install -y certbot python-certbot-nginx
 
+# Begin set up of git, so that we can use "git pull" to get future versions.
+# The first "git pull" may have a complication (we may have to remove a
+# conflicting file), but this is easier than other bootstrapping approaches.
+if [ ! -d .git ]; then
+  git clone -n https://github.com/metamath/metamath-website-scripts.git
+  mv metamath-website-scripts/.git .git
+fi
+
+
+# Automatically install security updates, per:
+# https://www.linode.com/docs/guides/how-to-configure-automated-security-updates-debian/
+# We don't need "sudo"; we assume we're running as root
+apt install -y unattended-upgrades
+systemctl enable unattended-upgrades
+systemctl start unattended-upgrades
+
 # (run certbot using script from build-linode-cert.sh, or
 #  copy over files from another server
 #
@@ -131,16 +147,16 @@ apt-get install -y certbot python-certbot-nginx
 # elsewhere - we eventually need to NOT assume that.
 # Set up crontabs - note that "certbot renew"
 #     requires that build-linode-cert.sh be run
-crontab -u root -r
-[ -f /root/tmpcron ] && rm /root/tmpcron
 # Keep Metamath site updated daily
-echo "7 4 * * * /root/mirrorsync.sh" >> /root/tmpcron
+cat > ,tmpcron << END
+7 4 * * * /root/mirrorsync.sh
 # Run certbot renewal once a month
-echo "0 3 1 * * certbot renew" >> /root/tmpcron
+0 3 1 * * certbot renew
 # Update file database daily with "locate" package
-echo "0 5 * * * updatedb" >> /root/tmpcron
-crontab -u root /root/tmpcron
-rm /root/tmpcron
+echo "0 5 * * * updatedb
+END
+crontab -u root ,tmpcron
+rm ,tmpcron
 
 # Do the initial site load (will take a while) - or just wait for cron
 # /root/mirrorsync.sh

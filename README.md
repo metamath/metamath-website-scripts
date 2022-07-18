@@ -36,3 +36,5 @@ run `build-linode.sh`
 
 
 You can always update the scripts later with `git pull`
+
+The `us.metamath.org` file is the configuration file for the nginx web server.

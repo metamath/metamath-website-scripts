@@ -38,20 +38,19 @@ get_setting () {
   return
 }
 
+# Print the message $1 and exit with failure.
+fail () {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
 # Main script begins here.
 
 echo 'Beginning install, Using the settings in settings/ where available.'
 
-# Set hostname if a different one is desired.
-hostname="$(get_setting hostname 'What fully-qualified hostname do you want?' \
-            '[A-Za-z0-9\.\-]+' "$(hostname)")"
-if [ "$hostname" != "$(hostname)" ]; then
-  echo "The system is named <$(hostname)>, not $hostname. Renaming."
-  echo TEMPORARY hostnamectl set-hostname "$hostname"
-  hostname="$(hostname)"
-fi
-
-exit 0
+# Sanity check
+[ "$(whoami)" = 'root' ] || fail 'Must be root.'
+[ "$(pwd)" = '/root' ] || fail 'Must be in /root directory.'
 
 # Make sure we're installing the currently-available packages.
 # Linode-specific information about this is at:
@@ -63,9 +62,26 @@ exit 0
 
 apt-get update -y && apt-get upgrade -y
 
-# Install git, enabling easy download/updates of scripts.
-# It should already be there, but let's make sure of it.
+# Set up git, so we can use "git pull" to update our scripts.
 apt-get install -y git
+if [ ! -d .git ]; then
+  git clone -n https://github.com/metamath/metamath-website-scripts.git
+  mv metamath-website-scripts/.git .git
+  rmdir metamath-website-scripts
+  echo 'Run "git pull", then rerun this script.'
+  git checkout --force main
+  # Start over - the script may have changed due to "git checkout"
+  exit 0
+fi
+
+# Set hostname if a different one is desired.
+hostname="$(get_setting hostname 'What fully-qualified hostname do you want?' \
+            '[A-Za-z0-9\.\-]+' "$(hostname)")"
+if [ "$hostname" != "$(hostname)" ]; then
+  echo "The system is named <$(hostname)>, not $hostname. Renaming."
+  hostnamectl set-hostname "$hostname"
+  hostname="$(hostname)"
+fi
 
 # Automatically install security updates, per:
 # https://www.linode.com/docs/guides/how-to-configure-automated-security-updates-debian/

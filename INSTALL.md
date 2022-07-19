@@ -62,17 +62,7 @@ For example, here's how to update DNS and domainmonger.com:
 ## Download scripts
 
 * log in as root, e.g., `ssh root@IP-ADDRESS-GIVEN`
-* Install git and the install scripts using git:
-
-~~~~
-apt-get install -y git
-if [ ! -d .git ]; then
-  git clone -n https://github.com/metamath/metamath-website-scripts.git
-  mv metamath-website-scripts/.git .git
-  git checkout main
-  rmdir metamath-website-scripts
-fi
-~~~~
+* Copy build-system.sh script into the /root directory.
 
 ## Run (re-)install script
 

@@ -81,6 +81,8 @@ apt-get install -y nginx
 # Install certbot (so we get TLS certificates for the web server)
 apt-get install -y certbot python-certbot-nginx
 
+# TODO: hostname isn't always webdomain name, split that up
+
 # Install nginx configuration file for its HOSTNAME, tweaking it
 # if the host isn't us.metamath.org.
 
@@ -121,6 +123,7 @@ END
 crontab -u root ,tmpcron
 rm ,tmpcron
 
+# TODO: Make it easy to enable certbot
 # certbot run -n --nginx --agree-tos --redirect -m "${email}" \
 #           -d "${website_domain}"
 

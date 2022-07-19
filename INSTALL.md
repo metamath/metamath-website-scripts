@@ -30,33 +30,6 @@ Create a VM to run on. Here's how to do this on Linode:
           ssh -t nmegill@lish-newark.linode.com debian-us-east-001
 ~~~~
 
-
-## Run initial setup
-
-* log in as root, e.g., `ssh root@IP_ADDRESS_GIVEN`
-* Set up its hostname, e.g. `hostnamectl set-hostname us.metamath.org`
-  (this adjusts other files like `/etc/hostname`)
-* Install git and the install scripts using git:
-
-~~~~
-apt-get install -y git
-if [ ! -d .git ]; then
-  git clone -n https://github.com/metamath/metamath-website-scripts.git
-  mv metamath-website-scripts/.git .git
-  git checkout main
-  rmdir metamath-website-scripts
-fi
-~~~~
-
-Then run the install script:
-
-~~~~sh
-./build-system.sh
-~~~~
-
-You can always update the scripts later with `git pull`
-and then re-run the install script.
-
 ## Setup DNS
 
 Log in to your DNS registar (for us.metamath.org that is domainmonger).
@@ -85,6 +58,32 @@ For example, here's how to update DNS and domainmonger.com:
                    To specify any Host Name, use the asterisk "*"
                    To specify no Host Name, use the at char "@"
 ~~~~
+
+## Download scripts
+
+* log in as root, e.g., `ssh root@IP-ADDRESS-GIVEN`
+* Install git and the install scripts using git:
+
+~~~~
+apt-get install -y git
+if [ ! -d .git ]; then
+  git clone -n https://github.com/metamath/metamath-website-scripts.git
+  mv metamath-website-scripts/.git .git
+  git checkout main
+  rmdir metamath-website-scripts
+fi
+~~~~
+
+## Run (re-)install script
+
+Run the (re-)install script:
+
+~~~~sh
+./build-system.sh
+~~~~
+
+You can always update the scripts later with `git pull`
+and then re-run the install script.
 
 ## Setup TLS certificats
 

@@ -51,7 +51,7 @@ fi
 Then run the install script:
 
 ~~~~sh
-./build-linode.sh
+./build-system.sh
 ~~~~
 
 You can always update the scripts later with `git pull`

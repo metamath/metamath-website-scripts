@@ -125,6 +125,9 @@ apt-get -y install gcc rlwrap
 # Install sshd configuration tweaks
 cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/
 
+# Install sysctl configuration tweaks (to harden the system security)
+cp -p local-sysctl.conf /etc/sysctl.d/
+
 # TODO: This assumes we're a mirror that will use rsync to get data
 # elsewhere - we eventually need to NOT assume that.
 

@@ -64,6 +64,10 @@ server {
 	#	deny all;
 	#}
 
+	# Harden per https://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
+	add_header X-Content-Type-Options nosniff;
+	add_header X-XSS-Protection "1; mode=block";
+
 	# TLS certificates managed by Certbot for Let's Encrypt.
 	ssl_certificate /etc/letsencrypt/live/us.metamath.org/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/us.metamath.org/privkey.pem;
@@ -75,6 +79,11 @@ server {
 	listen 80 ;
 	listen [::]:80 ;
 	server_name us.metamath.org;
+
+	# Harden per https://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
+	add_header X-Content-Type-Options nosniff;
+	add_header X-XSS-Protection "1; mode=block";
+
 	# Use 302 for temporary redirect, use 301 to tell people "use HTTPS".
 	return 301 https://$host$request_uri;
 }

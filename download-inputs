@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# Log in to us2.metamath.org and rebuild with:
+# su
+# su bfwa
+# cd
+
+# 1. Download set.mm repo. This presumes we set this up with:
+# mkdir -f repos ; cd repos
+# git clone https://github.com/metamath/set.mm.git
+
+(
+  cd repos/set.mm
+  git pull 
+)
+
+# 2. Copy files to mmmaster/ directory.
+# Norm did all updates by hand, we aren't going to do that.
+
+# Copy databases in.
+cp -p repos/set.mm/*.mm /opt/dts/mmmaster/metamathsite/metamath/
+
+# Copy .html / .raw.html files for mpe (set.mm)
+(
+  cd repos/set.mm
+  cp -p \
+    mmbiblio.html \
+    mmcomplex.raw.html \
+    mmdeduction.raw.html \
+    mmfrege.raw.html \
+    mmhil.html \
+    mmmusic.html \
+    mmnatded.raw.html \
+    mmrecent.html \
+    mmset.raw.html \
+    mmtopstr.html \
+    mmzfcnd.raw.html \
+    /opt/dts/mmmaster/metamathsite/mpegif/
+)
+
+# Copy .html / .raw.html files for ile (iset.mm)
+# Not handled:
+# /opt/dts/mmmaster/metamathsite/ilegif/mmbiblio_IL.html
+(
+  cd repos/set.mm
+  cp -p \
+    mmil.raw.html \
+    mmrecent_IL.html \
+   /opt/dts/mmmaster/metamathsite/ilegif/
+)
+
+cp -p repos/set.mm/mm_100.html /opt/dts/mmmaster/metamathsite/
+
+# TODO: We need to copy exactly what we need. E.g.:
+# Set up /opt/dts/mmmaster/metamathsite - master location of sources
+# Need to copy `set.mm` etc. .mm files into 
+#  /opt/dts/mmmaster/metamathsite/metamath/
+#  /opt/dts/mmaster/other/wba/ # for wba.mm and wba.raw.mm
+# Need to copy .raw.html files into
+#  /opt/dts/mmmaster/metamathsite/mpegif/
+# ... and also:
+#  /opt/dts/mmmaster/metamathsite/ilegif/
+#  /opt/dts/mmmaster/metamathsite/other/wba/
+
+
+# 3. Rebuild
+
+# [ -f nohup.out ] && mv --backup=numbered nohup.out 2.tmp; \
+#  nohup ./build-metamath-site &
+
+# /opt/dts/1/metamathsite - version for rsync (normal robots.txt)
+#   Actually is /opt/dts/xxnew/ is created instead of /opt/dts/1/
+#   When we are happy with the script run, we manually rename the existing
+#   /opt/dts/1/ to /opt/dts/xxold, then rename /opt/dts/xxnew to /opt/dts/1/
+#   Note that this script erases any previous xxold and xxnew.
+#   An existing /opt/dts/1/ is untouched by this script.
+# /opt/dts/2/metamathsite - previous version of 1
+
+# 4. Move to final places.
+
+# mv /opt/dts/1/ /opt/dts/xxold/
+# mv /opt/dts/xxnew/ /opt/dts/1/
+
+# 5. upload to metamath.org.

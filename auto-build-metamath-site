@@ -1,0 +1,11 @@
+#!/bin/sh
+
+./download-inputs
+./build-metamath-site
+
+# Auto-install
+if [ -d /opt/dts/xxnew/ ] ; then
+  mv /opt/dts/1/ /opt/dts/1.old/ || true
+  mv /opt/dts/xxnew/ /opt/dts/1/
+  rm -fr /opt/dts/1.old/
+fi

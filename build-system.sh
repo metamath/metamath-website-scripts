@@ -91,6 +91,9 @@ apt install -y unattended-upgrades
 systemctl enable unattended-upgrades
 systemctl start unattended-upgrades
 
+# Install fail2ban, a simple intrusion prevention system for mass logins, etc.
+apt install -y fail2ban
+
 # Install web server (nginx)
 apt-get install -y nginx
 

@@ -130,13 +130,16 @@ cp -p local-sysctl.conf /etc/sysctl.d/
 
 # Install & configure uncomplicated firewall.
 apt-get -y install ufw
+# The firewall is simply an *extra* step, we can disable it temporarily.
+# I'm more worried about accidentally losing control over the system.
 ufw disable
-ufw reset --force
+ufw reset
 ufw default deny incoming
 ufw default allow outgoing
-ufw allow ssh
 # Allows both http and https:
 ufw allow 'Nginx Full'
+# We MUST do this before enabling firewall
+ufw allow ssh
 ufw enable
 ufw status
 

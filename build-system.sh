@@ -142,6 +142,7 @@ ufw allow 'Nginx Full'
 ufw allow ssh
 ufw enable
 ufw status
+ufw verbose
 
 # TODO: This assumes we're a mirror that will use rsync to get data
 # elsewhere - we eventually need to NOT assume that.
@@ -157,7 +158,9 @@ cat > ,tmpcron << END
 # Update file database daily with "locate" package
 0 5 * * * updatedb
 # Forcibly tell ufw to allow ssh, in case we accidentally remove it.
-0 5 * * * ufw allow ssh
+# 0 5 * * * ufw allow ssh
+# While we text, disable ufw on a timer so we can recover
+0 5 * * * ufw disable
 END
 crontab -u root ,tmpcron
 rm ,tmpcron

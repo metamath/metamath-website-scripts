@@ -158,9 +158,7 @@ cat > ,tmpcron << END
 # Update file database daily with "locate" package
 0 5 * * * updatedb
 # Forcibly tell ufw to allow ssh, in case we accidentally remove it.
-# 0 5 * * * ufw allow ssh
-# While we text, disable ufw on a timer so we can recover
-0 5 * * * ufw disable
+0 5 * * * ufw allow ssh
 END
 crontab -u root ,tmpcron
 rm ,tmpcron

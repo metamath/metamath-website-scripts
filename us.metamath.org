@@ -41,6 +41,10 @@ server {
 	index index.html index.htm index.nginx-debian.html;
 
 	location / {
+		# We only serve data, so don't allow anything else.
+		limit_except GET HEAD OPTIONS {
+			deny all;
+		}
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
 		try_files $uri $uri/ =404;
@@ -83,6 +87,13 @@ server {
 	# Harden per https://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
 	add_header X-Content-Type-Options nosniff;
 	add_header X-XSS-Protection "1; mode=block";
+
+	location / {
+		# We only serve data, so don't allow anything else.
+		limit_except GET HEAD OPTIONS {
+			deny all;
+		}
+	}
 
 	# Use 302 for temporary redirect, use 301 to tell people "use HTTPS".
 	return 301 https://$host$request_uri;

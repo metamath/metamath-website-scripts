@@ -128,6 +128,18 @@ cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/
 # Install sysctl configuration tweaks (to harden the system security)
 cp -p local-sysctl.conf /etc/sysctl.d/
 
+# Install & configure uncomplicated firewall.
+apt-get -y install ufw
+ufw disable
+ufw reset --force
+ufw default deny incoming
+ufw default allow outgoing
+ufw allow ssh
+# Allows both http and https:
+ufw allow 'Nginx Full'
+ufw enable
+ufw status
+
 # TODO: This assumes we're a mirror that will use rsync to get data
 # elsewhere - we eventually need to NOT assume that.
 
@@ -141,6 +153,8 @@ cat > ,tmpcron << END
 0 3 1 * * certbot renew
 # Update file database daily with "locate" package
 0 5 * * * updatedb
+# Forcibly tell ufw to allow ssh, in case we accidentally remove it.
+0 5 * * * ufw allow ssh
 END
 crontab -u root ,tmpcron
 rm ,tmpcron

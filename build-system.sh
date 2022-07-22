@@ -100,16 +100,20 @@ apt-get install -y nginx
 # Install certbot (so we get TLS certificates for the web server)
 apt-get install -y certbot python-certbot-nginx
 
-# TODO: hostname isn't always webdomain name, split that up
+# NOTE: The web domain name doesn't HAVE to be the hostname.
+# To make future changes easier, we'll use the term "webname" for the
+# web domain name, but for now assume it's the hostname. That will make
+# these scripts a little easier to edit later if needed.
+webname="$hostname"
 
-# Install nginx configuration file for its HOSTNAME, tweaking it
+# Install nginx configuration file for its webname, tweaking it
 # if the host isn't us.metamath.org.
 
-mkdir -p "/var/www/${hostname}/html" # Where we'll store HTML files
-nginx_config="/etc/nginx/sites-available/$hostname" # Config file location
+mkdir -p "/var/www/${webname}/html" # Where we'll store HTML files
+nginx_config="/etc/nginx/sites-available/${webname}" # Config file location
 cp -p us.metamath.org "${nginx_config}"
 # This uses GNU sed extension -i
-sed -E -i'' -e 's/us\.metamath\.org/'"${hostname}"'/g' "${nginx_config}"
+sed -E -i'' -e 's/us\.metamath\.org/'"${webname}"'/g' "${nginx_config}"
 ln -f -s "${nginx_config}" /etc/nginx/sites-enabled/
 systemctl restart nginx
 
@@ -163,9 +167,37 @@ END
 crontab -u root ,tmpcron
 rm ,tmpcron
 
-# TODO: Make it easy to enable certbot
-# certbot run -n --nginx --agree-tos --redirect -m "${email}" \
-#           -d "${website_domain}"
+install_cert="$(get_setting install_cert \
+  "Obtain & install a new certificate for ${webname}?" 'y|n' 'n')"
+
+case "$install_cert" in
+y)
+    # Customize for this machine
+    poc_email="$(get_setting poc_email \
+      "What's the email POC for ${webname}?" '.+@.+' '')"
+
+    certbot run -n --nginx --agree-tos --redirect -m "${poc_email}" \
+                -d "${webname}"
+
+    # Expected results:
+    #  - Congratulations! Your certificate and chain have been saved at:
+    #    /etc/letsencrypt/live/linode2.metamath.org/fullchain.pem
+    #    Your key file has been saved at:
+    #    /etc/letsencrypt/live/linode2.metamath.org/privkey.pem
+    #    Your cert will expire on 2021-09-18. To obtain a new or tweaked
+    #    version of this certificate in the future, simply run certbot again
+    #    with the "certonly" option. To non-interactively renew *all* of
+    #    your certificates, run "certbot renew"
+    #  - Your account credentials have been saved in your Certbot
+    #    configuration directory at /etc/letsencrypt. You should make a
+    #    secure backup of this folder now. This configuration directory will
+    #    also contain certificates and private keys obtained by Certbot so
+    #    making regular backups of this folder is ideal.
+
+    # We've run the initial installer, so assume we won't do it again.
+    set_setting 'install_cert' n
+    ;;
+esac
 
 # Do the initial site load (will take a while) - or just wait for cron
 echo 'You may run this down to force resync: /root/mirrorsync.sh'

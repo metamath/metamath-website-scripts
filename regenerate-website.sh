@@ -9,6 +9,8 @@ set -eu
 : ${REGENERATE_GENERATE:=y}
 : ${REGENERATE_PUSH:=y}
 
+cd
+
 case "${REGENERATE_DOWNLOAD}" in
 y)
     mkdir -p repos

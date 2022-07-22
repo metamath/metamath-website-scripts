@@ -11,6 +11,9 @@ set -eu
 
 cd
 
+# Configure git so it'll stop complaining about certain kinds of pulls
+git config pull.rebase false
+
 case "${REGENERATE_DOWNLOAD}" in
 y)
     mkdir -p repos
@@ -24,6 +27,56 @@ y)
         cd repos/set.mm
         git pull  --depth 10
     )
+;;
+esac
+
+# Regenerate website, now that we've downloaded all the external files.
+# Previously it was all generated to
+# </opt/dts/mmmaster/metamathsite/>
+# (e.g., </opt/dts/mmmaster/metamathsite/metamath/>)
+# but now we'll just generate to $HOME/metamathsite
+
+case "${REGENERATE_GENERATE}" in
+y)
+    METAMATHSITE="$HOME/metamathsite"
+    mkdir -p "$METAMATHSITE/metamath/"
+
+    # Copy databases in.
+    cp -p repos/set.mm/*.mm "$METAMATHSITE/metamath/"
+
+    mkdir -p "$METAMATHSITE/mpegif/"
+    # Copy .html / .raw.html files for mpe (set.mm)
+    (
+      cd repos/set.mm
+      cp -p \
+        mmbiblio.html \
+        mmcomplex.raw.html \
+        mmdeduction.raw.html \
+        mmfrege.raw.html \
+        mmhil.html \
+        mmmusic.html \
+        mmnatded.raw.html \
+        mmrecent.html \
+        mmset.raw.html \
+        mmtopstr.html \
+        mmzfcnd.raw.html \
+        "$METAMATHSITE/mpegif"
+    )
+
+    mkdir -p "$METAMATHSITE/ilegif/"
+    # Copy .html / .raw.html files for ile (iset.mm)
+    # Not handled:
+    # /opt/dts/mmmaster/metamathsite/ilegif/mmbiblio_IL.html
+    (
+      cd repos/set.mm
+      cp -p \
+        mmil.raw.html \
+        mmrecent_IL.html \
+        "$METAMATHSITE/ilegif/"
+    )
+
+    cp -p repos/set.mm/mm_100.html "$METAMATHSITE/"
+
 ;;
 esac
 

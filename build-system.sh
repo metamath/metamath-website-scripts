@@ -201,5 +201,10 @@ y)
     ;;
 esac
 
+# Set up "generator" user to regenerate website
+
+adduser --gecos 'Metamath website generator' --disabled-password generator \
+  || true
+
 # Do the initial site load (will take a while) - or just wait for cron
 echo 'You may run this down to force resync: /root/mirrorsync.sh'

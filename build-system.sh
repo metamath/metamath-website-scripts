@@ -168,7 +168,7 @@ crontab -u root ,tmpcron
 rm ,tmpcron
 
 install_cert="$(get_setting install_cert \
-  "Obtain & install a new certificate for ${webname}?" 'y|n' 'n')"
+  "Obtain & install a new initial certificate for ${webname}?" 'y|n' 'n')"
 
 case "$install_cert" in
 y)
@@ -178,6 +178,8 @@ y)
 
     certbot run -n --nginx --agree-tos --redirect -m "${poc_email}" \
                 -d "${webname}"
+
+    # certbot renew --force-renewal
 
     # Expected results:
     #  - Congratulations! Your certificate and chain have been saved at:

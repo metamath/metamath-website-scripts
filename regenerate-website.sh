@@ -12,7 +12,7 @@ set -eu
 cd
 
 # Configure git so it'll stop complaining about certain kinds of pulls
-git config pull.rebase false
+git config --global pull.rebase false
 
 case "${REGENERATE_DOWNLOAD}" in
 y)

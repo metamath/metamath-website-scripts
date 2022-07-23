@@ -21,7 +21,7 @@ get_setting () {
     while true; do
       echo >&2
       echo "[$1] $2" >&2
-      echo "Default: <$3> Requires: <$4>" >&2
+      echo "Default: <$4> Requires: <$3>" >&2
       read -r answer
       if [ -z "$answer" ]; then # Use default on empty answer.
         answer="${4:-''}"

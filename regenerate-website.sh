@@ -27,7 +27,7 @@ y)
         cd repos/set.mm
         git pull  --depth '10'
     )
-    './set.mm/scripts/download-metamath'
+    './repos/set.mm/scripts/download-metamath'
 ;;
 esac
 
@@ -43,7 +43,7 @@ y)
     mkdir -p "$METAMATHSITE/metamath/"
 
     # Rebuild metmath.exe, so we're certain to use the latest one.
-    './set.mm/scripts/build-metamath'
+    './repos/set.mm/scripts/build-metamath'
 
     # Copy databases in.
     cp -p repos/set.mm/*.mm "$METAMATHSITE/metamath/"

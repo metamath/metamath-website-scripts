@@ -202,9 +202,13 @@ y)
 esac
 
 # Set up "generator" user to regenerate website
-
 adduser --gecos 'Metamath website generator' --disabled-password generator \
   || true
+
+# Copy the top-level regeneration script so "generator" will run it.
+cp -p /root/regenerate-website.sh /home/generator/
+
+# TODO: Create a crontab entry for "generator" to periodically regenerate.
 
 # Do the initial site load (will take a while) - or just wait for cron
 echo 'You may run this down to force resync: /root/mirrorsync.sh'

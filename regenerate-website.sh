@@ -80,4 +80,7 @@ y)
 ;;
 esac
 
+echo 'DEBUG: Showing the files generaated so far'
+find "$METAMATHSITE"
+
 exit 0

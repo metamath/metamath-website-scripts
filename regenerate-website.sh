@@ -1,5 +1,5 @@
 #!/bin/sh
-# regenerate-website - download & regenerate the Metamath website
+# regenerate-website - download & regenerate the Metamath website contents
 
 set -eu
 
@@ -25,8 +25,9 @@ y)
     fi
     (
         cd repos/set.mm
-        git pull  --depth 10
+        git pull  --depth '10'
     )
+    './set.mm/scripts/download-metamath'
 ;;
 esac
 
@@ -40,6 +41,9 @@ case "${REGENERATE_GENERATE}" in
 y)
     METAMATHSITE="$HOME/metamathsite"
     mkdir -p "$METAMATHSITE/metamath/"
+
+    # Rebuild metmath.exe, so we're certain to use the latest one.
+    './set.mm/scripts/build-metamath'
 
     # Copy databases in.
     cp -p repos/set.mm/*.mm "$METAMATHSITE/metamath/"

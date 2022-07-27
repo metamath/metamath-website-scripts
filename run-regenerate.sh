@@ -3,4 +3,6 @@
 # This is helpful in debugging run-regenerate
 
 cp -p /root/regenerate-website.sh /home/generator/
+cp -p /root/install.sh /home/generator/
+
 runuser -u generator -- '/home/generator/regenerate-website.sh'

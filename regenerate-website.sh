@@ -41,12 +41,16 @@ case "${REGENERATE_GENERATE}" in
 y)
     METAMATHSITE="$HOME/metamathsite"
     mkdir -p "$METAMATHSITE/metamath/"
+    mkdir -p "$METAMATHSITE/mpegif/"
 
     # Rebuild metmath.exe, so we're certain to use the latest one.
     './repos/set.mm/scripts/build-metamath'
 
     # Copy databases in.
     cp -p repos/set.mm/*.mm "$METAMATHSITE/metamath/"
+
+    cd "$METAMATHSITE"
+    sh -x "$HOME/install.sh" >install.log 2>&1
 
     mkdir -p "$METAMATHSITE/mpegif/"
     # Copy .html / .raw.html files for mpe (set.mm)

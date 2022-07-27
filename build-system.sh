@@ -124,7 +124,8 @@ apt-get install -y rsync
 
 apt-get -y install locate zip
 
-apt-get -y install gcc rlwrap autoconf make
+# Install what you need to rebuild metamath.exe and website
+apt-get -y install gcc rlwrap autoconf make gawk
 
 # Install sshd configuration tweaks
 cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/

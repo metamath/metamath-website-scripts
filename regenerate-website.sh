@@ -61,6 +61,7 @@ y)
 
     cd "$METAMATHSITE"
     sh -x "$HOME/install.sh" >install.log 2>&1
+    cd "$HOME"
 
     mkdir -p "$METAMATHSITE/mpegif/"
     # Copy .html / .raw.html files for mpe (set.mm)

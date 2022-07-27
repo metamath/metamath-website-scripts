@@ -1,7 +1,17 @@
 #!/bin/sh
 # regenerate-website - download & regenerate the Metamath website contents
 
+# Print the message $1 and exit with failure.
+fail () {
+  printf '%s\n' "$1" >&2
+  exit 1
+}
+
 set -eu
+
+if [ "$(whoami)" = 'root' ]; then
+    fail 'DO NOT run this as roo!!'
+fi
 
 # This script by default downloads, generates, and pushes its results.
 # Set environment variables to skip some steps:

@@ -24,18 +24,20 @@ cd
 # Configure git so it'll stop complaining about certain kinds of pulls
 git config --global pull.rebase false
 
+# Download set.mm using git. We don't use a shallow pull, because that risks
+# failure if we are too far behind (it'll report they "diverged").
 case "${REGENERATE_DOWNLOAD}" in
 y)
     mkdir -p repos
     if [ ! -d repos/set.mm ]; then
         (
             cd repos;
-            git clone --depth 1 https://github.com/metamath/set.mm.git
+            git clone https://github.com/metamath/set.mm.git
         )
     fi
     (
         cd repos/set.mm
-        git pull  --depth '10'
+        git pull
     )
     './repos/set.mm/scripts/download-metamath'
 ;;

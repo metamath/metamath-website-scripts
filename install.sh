@@ -120,7 +120,9 @@
 # 6-Jun-2021
 echo "install.sh time start: `date`"
 
-set -eu
+# set -eu
+# Show what we're doing, for debugging
+set -x
 
 # Check that necessary software is present
 # Note: md5sum is called md5 on Mac.  (However, the need for md5sum

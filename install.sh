@@ -250,7 +250,7 @@ fi
 echo "Creating subdirectories..."
 
 # Remove "backup" version of set.mm if any
-[ -f metamathsite/set.mm~1 ] && rm -f metamathsite/set.mm~1
+rm -f metamathsite/set.mm~1
 # Remove "working" version of set.mm if any
 [ -f metamathsite/set.mm ] && rm -f metamathsite/set.mm
 

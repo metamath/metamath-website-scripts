@@ -7,7 +7,8 @@ fail () {
   exit 1
 }
 
-set -eu
+# set -eu
+set -x
 
 if [ "$(whoami)" = 'root' ]; then
     fail 'DO NOT run this as roo!!'

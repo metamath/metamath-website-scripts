@@ -14,6 +14,8 @@ if [ "$(whoami)" = 'root' ]; then
     fail 'DO NOT run this as roo!!'
 fi
 
+start_date="$(date)"
+
 # This script by default downloads, generates, and pushes its results.
 # Set environment variables to skip some steps:
 : ${REGENERATE_DOWNLOAD:=y}
@@ -123,7 +125,12 @@ y)
 ;;
 esac
 
-echo 'DEBUG: Showing the files generaated so far'
-find "$METAMATHSITE"
+# echo 'DEBUG: Showing the files generaated so far'
+# find "$METAMATHSITE"
+
+end_date="$(date)"
+echo
+echo "Start: ${start_date}"
+echo "End:   ${end_date}"
 
 exit 0

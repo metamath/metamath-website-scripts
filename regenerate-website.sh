@@ -20,18 +20,26 @@ fi
 : ${REGENERATE_GENERATE:=y}
 : ${REGENERATE_PUSH:=y}
 
+# Previously we generated all files to
+# </opt/dts/mmmaster/metamathsite/>
+# (e.g., </opt/dts/mmmaster/metamathsite/metamath/>)
+# but now we'll just generate to METAMATHSITE which is $HOME/metamathsite
+METAMATHSITE="$HOME/metamathsite"
+
 cd
 
 # Configure git so it'll stop complaining about certain kinds of pulls
 git config --global pull.rebase false
 
-# We once downloaded set.mm using git, but that creates a *huge* .git
-# directory we don't need. Downloading *just* the tarball from GitHub
-# is actually quite fast, so we'll just do it every time if we
-# are going to download it at all.
+
+# Erase & re-download what we need.
 
 case "${REGENERATE_DOWNLOAD}" in
 y)
+    # We once downloaded set.mm using git, but that creates a *huge* .git
+    # directory we don't need. Downloading *just* the tarball from GitHub
+    # is actually quite fast, so we'll just do it every time if we
+    # are going to download it at all.
     rm -fr repos
     # cd repos; git clone https://github.com/metamath/set.mm.git
     mkdir -p repos/set.mm
@@ -40,30 +48,29 @@ y)
         curl -L https://api.github.com/repos/metamath/set.mm/tarball | \
             tar xz --strip=1
     )
+    # Download metamath source code.
     './repos/set.mm/scripts/download-metamath'
+
+    # TODO: To ensure that we start from a clean slate, we'll
+    # REMOVE the $METAMATH directory, load in its seed,
+    # regenerate parts, & move them in. This is very inefficient, but it ensures
+    # we know exactly what we're starting from.
+
+    rm -fr "$METAMATHSITE/"
+    mkdir -p "$METAMATHSITE/"
+    (
+    cd "$METAMATHSITE"
+    SEED='https://api.github.com/repos/metamath/metamath-website-seed/tarball'
+    curl -L "$SEED" | tar xz --strip=1
+    )
+
+    # Bring in latex styles.
+    curl -L 'https://raw.githubusercontent.com/metamath/metamath-book/master/narrow.sty' > "$METAMATHSITE/latex/narrow.sty"
+    curl -L 'https://raw.githubusercontent.com/metamath/metamath-book/master/normal.sty' > "$METAMATHSITE/latex/normal.sty"
 ;;
 esac
 
 # Regenerate website, now that we've downloaded all the external files.
-# Previously we generated all files to
-# </opt/dts/mmmaster/metamathsite/>
-# (e.g., </opt/dts/mmmaster/metamathsite/metamath/>)
-# but now we'll just generate to METAMATHSITE which is $HOME/metamathsite
-
-METAMATHSITE="$HOME/metamathsite"
-
-# TODO: To ensure that we start from a clean slate, we'll
-# REMOVE the $METAMATH directory, load in its seed,
-# regenerate parts, & move them in. This is very inefficient, but it ensures
-# we know exactly what we're starting from.
-
-rm -fr "$METAMATHSITE/"
-mkdir -p "$METAMATHSITE/"
-(
-cd "$METAMATHSITE"
-curl -L https://api.github.com/repos/metamath/metamath-website-seed/tarball | \
-        tar xz --strip=1
-)
 
 case "${REGENERATE_GENERATE}" in
 y)

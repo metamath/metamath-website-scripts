@@ -4,6 +4,9 @@
 # NOTE: This script is *SPECIFICALLY* designed to be able to be re-run.
 # See INSTALL.md
 
+# By default we will also generate the website.
+: ${GENERATE_WEBSITE:=y}
+
 # Record in setting $1 the value $2
 set_setting () {
   printf '%s\n' "$2" > "settings/$1"
@@ -127,9 +130,6 @@ apt-get -y install locate zip
 # Install what you need to rebuild metamath.exe and website
 apt-get -y install gcc rlwrap autoconf make gawk
 
-# Install what you need to rebuild LaTex things for website
-apt-get -y install texlive
-
 # Install sshd configuration tweaks
 cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/
 
@@ -205,14 +205,20 @@ y)
     ;;
 esac
 
-# Set up "generator" user to regenerate website
-adduser --gecos 'Metamath website generator' --disabled-password generator \
-  || true
+# If we're *generating* the pages (not just serving them), set that up.
+if [ "$GENERATE_WEBSITE" = 'y' ]; then
+    # Install what you need to rebuild LaTex things for website
+    apt-get -y install texlive
 
-# Copy the top-level regeneration script so "generator" will run it.
-cp -p /root/regenerate-website.sh /home/generator/
+    # Set up "generator" user to regenerate website
+    adduser --gecos 'Metamath website generator' --disabled-password generator \
+      || true
 
-# TODO: Create a crontab entry for "generator" to periodically regenerate.
+    # Copy the top-level regeneration script so "generator" will run it.
+    cp -p /root/regenerate-website.sh /home/generator/
 
-# Do the initial site load (will take a while) - or just wait for cron
-echo 'You may run this down to force resync: /root/mirrorsync.sh'
+    # TODO: Create a crontab entry for "generator" to periodically regenerate.
+
+    # Do the initial site load (will take a while) - or just wait for cron
+    echo 'You may run this down to force resync: /root/mirrorsync.sh'
+fi

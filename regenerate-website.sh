@@ -45,18 +45,32 @@ y)
 esac
 
 # Regenerate website, now that we've downloaded all the external files.
-# Previously it was all generated to
+# Previously we generated all files to
 # </opt/dts/mmmaster/metamathsite/>
 # (e.g., </opt/dts/mmmaster/metamathsite/metamath/>)
-# but now we'll just generate to $HOME/metamathsite
+# but now we'll just generate to METAMATHSITE which is $HOME/metamathsite
+
+METAMATHSITE="$HOME/metamathsite"
+
+# TODO: To ensure that we start from a clean slate, we'll
+# REMOVE the $METAMATH directory, load in its seed,
+# regenerate parts, & move them in. This is very inefficient, but it ensures
+# we know exactly what we're starting from.
+
+rm -fr "$METAMATHSITE/"
+mkdir -p "$METAMATHSITE/"
+(
+cd "$METAMATHSITE"
+curl -L https://api.github.com/repos/metamath/metamath-website-seed/tarball | \
+        tar xz --strip=1
+)
 
 case "${REGENERATE_GENERATE}" in
 y)
-    METAMATHSITE="$HOME/metamathsite"
     mkdir -p "$METAMATHSITE/metamath/"
     mkdir -p "$METAMATHSITE/mpegif/"
 
-    # Rebuild metmath.exe, so we're certain to use the latest one.
+    # Rebuild metamath.exe, so we're certain to use the latest one.
     './repos/set.mm/scripts/build-metamath'
 
     # Copy databases in.

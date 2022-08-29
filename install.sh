@@ -274,11 +274,10 @@ fi
 #echo debugmkdirtmpmetamathsite2
 mkdir tmpmetamathsite
 
-# Copy home directory files; create needed subdirectories
-for i in *
-do
-  [ -f $i ] && cp -p $i tmpmetamathsite/
-done
+# Copy top directory files; create needed subdirectories
+# First, copy the top directory files, skipping hidden (".") files.
+find . ! -name '.' -prune ! -name '.*' -type f -exec cp -p {} tmpmetamathsite/
+
 # We skip the tmpmetamathsite we're working on, of course; also, mpeuni
 # and qleuni are fully automatically generated so we skip them too
 #for i in `find . -type d -name "?*" | egrep -v "tmpmetamathsite|mpeuni|qleuni"`

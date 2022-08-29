@@ -127,6 +127,9 @@ apt-get -y install locate zip
 # Install what you need to rebuild metamath.exe and website
 apt-get -y install gcc rlwrap autoconf make gawk
 
+# Install what you need to rebuild LaTex things for website
+apt-get -y install texlive
+
 # Install sshd configuration tweaks
 cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/
 

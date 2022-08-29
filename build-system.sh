@@ -222,3 +222,5 @@ if [ "$GENERATE_WEBSITE" = 'y' ]; then
     # Do the initial site load (will take a while) - or just wait for cron
     echo 'You may run this down to force resync: /root/mirrorsync.sh'
 fi
+
+apt-get clean

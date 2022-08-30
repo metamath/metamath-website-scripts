@@ -7,6 +7,8 @@
 # By default we will also generate the website.
 : ${GENERATE_WEBSITE:=y}
 
+set -x
+
 # Record in setting $1 the value $2
 set_setting () {
   printf '%s\n' "$2" > "settings/$1"

@@ -89,7 +89,7 @@
 #
 ##############################################################################
 # (The following notes are intended for N. Megill only)
-# QA checklist for official web site release
+# OLD: QA checklist for official web site release
 # 1. nohup ./install.sh & check nohup.out for errors - Linux and Cygwin
 # 2. tar -xzf downloads/metamathsite.tar.gz, diff -rq with original
 # 2. nohup wget --mirror (url)/index.html & check nohup.out for "ERROR 404"
@@ -1577,7 +1577,8 @@ cp -p rdme-mpeuni.txt mpeuni/README.TXT
 sed -e "s/\$/`echo -e '\r'`/" mpeuni/README.TXT > mpeuni/__README.TXT
 # Create the download files
 tar -cjf downloads/mpeuni.tar.bz2 mpeuni
-tar -cf - mpeuni | gzip -9 > downloads/mpeuni.tar.gz
+# We're running out of space, don't generate this
+# tar -cf - mpeuni | gzip -9 > downloads/mpeuni.tar.gz
 [ -f downloads/mpeuni.zip ] && rm -f downloads/mpeuni.zip
 zip -r9 downloads/mpeuni.zip mpeuni
 # Now restore the original files
@@ -1890,7 +1891,8 @@ sed -e "s/\$/`echo -e '\r'`/" metamathsite/README.TXT \
 [ -f metamathsite/award2005eu.pdf ] && rm -f metamathsite/award2005eu.pdf
 # Build the downloads
 tar -cjf downloads/metamathsite.tar.bz2 metamathsite
-tar -cf - metamathsite | gzip -9 > downloads/metamathsite.tar.gz
+# We're running out of space, don't generate this
+# tar -cf - metamathsite | gzip -9 > downloads/metamathsite.tar.gz
 [ -f downloads/metamathsite.zip ] && rm -f downloads/metamathsite.zip
 zip -r9 downloads/metamathsite.zip metamathsite
 # 30-Mar-05 nm Disabled the 'echo' below

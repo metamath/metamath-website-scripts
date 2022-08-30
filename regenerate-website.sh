@@ -21,6 +21,7 @@ start_date="$(date)"
 : ${REGENERATE_DOWNLOAD:=y}
 : ${REGENERATE_GENERATE:=y}
 : ${REGENERATE_PUSH:=y}
+: ${COPY_TO_WEBPAGE:=y}
 
 # Previously we generated all files to
 # </opt/dts/mmmaster/metamathsite/>
@@ -127,6 +128,16 @@ esac
 
 # echo 'DEBUG: Showing the files generaated so far'
 # find "$METAMATHSITE"
+
+case "${COPY_TO_WEBPAGE}" in
+y)
+    if [ -d /var/www/us.metamath.org ]; then
+        mkdir /var/www/us.metamath.org/html
+        echo 'Copying generated pages to website'
+        rsync -a "$METAMATHSITE/" /var/www/us.metamath.org/html/
+    fi
+;;
+esac
 
 end_date="$(date)"
 echo

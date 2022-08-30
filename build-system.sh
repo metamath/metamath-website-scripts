@@ -127,8 +127,8 @@ apt-get install -y rsync
 
 apt-get -y install locate zip
 
-# Install what you need to rebuild metamath.exe and website
-apt-get -y install gcc rlwrap autoconf make gawk
+# Install what you need to rebuild website
+apt-get -y install make gawk
 
 # Install sshd configuration tweaks
 cp -p sshd_config_metamath.conf /etc/ssh/sshd_config.d/
@@ -160,13 +160,14 @@ ufw verbose
 # Keep Metamath site updated daily
 
 cat > ,tmpcron << END
-7 4 * * * /root/mirrorsync.sh
 # Run certbot renewal once a month
 0 3 1 * * certbot renew
 # Update file database daily with "locate" package
 0 5 * * * updatedb
-# Forcibly tell ufw to allow ssh, in case we accidentally remove it.
+# Safety: Forcibly tell ufw to allow ssh, in case we accidentally disable it.
 0 5 * * * ufw allow ssh
+# This would sync from "rsync.metamath.org":
+# 7 4 * * * /root/mirrorsync.sh
 END
 crontab -u root ,tmpcron
 rm ,tmpcron
@@ -207,6 +208,9 @@ esac
 
 # If we're *generating* the pages (not just serving them), set that up.
 if [ "$GENERATE_WEBSITE" = 'y' ]; then
+    # Need these to rebuild metamath.exe
+    apt-get -y install gcc rlwrap autoconf
+
     # Install what you need to rebuild LaTex things for website
     apt-get -y install texlive
 
@@ -217,7 +221,13 @@ if [ "$GENERATE_WEBSITE" = 'y' ]; then
     # Copy the top-level regeneration script so "generator" will run it.
     cp -p /root/regenerate-website.sh /home/generator/
 
-    # TODO: Create a crontab entry for "generator" to periodically regenerate.
+    # Chang ownership so generator can update the website contents
+    chown -R generator.generator "/var/www/${webname}/html"
+
+    # Create a crontab entry for "generator" to regenerate daily.
+    crontab -u generator - <<DONE
+0 4 * * * /home/generator/regenerate-website.sh
+DONE
 
     # Do the initial site load (will take a while) - or just wait for cron
     echo 'You may run this down to force resync: /root/mirrorsync.sh'

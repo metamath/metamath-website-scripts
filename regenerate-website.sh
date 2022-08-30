@@ -134,7 +134,7 @@ y)
     if [ -d /var/www/us.metamath.org ]; then
         mkdir /var/www/us.metamath.org/html
         echo 'Copying generated pages to website'
-        rsync -a "$METAMATHSITE/" /var/www/us.metamath.org/html/
+        rsync -a --delete "$METAMATHSITE/" /var/www/us.metamath.org/html/
     fi
 ;;
 esac

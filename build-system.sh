@@ -5,7 +5,8 @@
 # See INSTALL.md
 
 # By default we will also generate the website.
-: ${GENERATE_WEBSITE:=y}
+: "${GENERATE_WEBSITE:=y}"
+: "${SUPPORT_MIRRORS:=y}"
 
 set -x
 
@@ -234,5 +235,35 @@ DONE
     # Do the initial site load (will take a while) - or just wait for cron
     # echo 'You may run this down to force resync: /root/mirrorsync.sh'
 fi
+
+# If we're *supporting* mirrors logging in to us.
+# The directory "mirrors" has 0+ files, where:
+# filename is the fully-qualified domain name (FQDN, e.g., 'cn.metamath.org')
+# content is the SSH public key (.pub file) provided by the mirror to us.
+if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
+    cd mirrors || exit 1
+    for mirror in *; do
+        echo "Processing mirror $mirror"
+        # Create account. We'll just make the username the same as the FQDN.
+        adduser --gecos "Mirror $mirror" --disabled-password "$mirror" || true
+        # Harden system: by default the login shell is "no login"
+        chsh "$mirror" -s /bin/nologin
+        # Create symlink of /var/www/$mirror to the main file
+        webdir="/var/www/$mirror"
+        if [ ! -e "$webdir" ]; then
+            ln -s "/var/www/us.metamath.org" "$webdir"
+        fi
+        # Create authorized_key file so remote mirror can log in with ssh key,
+        # but only to have read-only access to just our directory.
+        rm -fr "/home/$mirror/.ssh"
+        mkdir -p  "/home/$mirror/.ssh"
+        auth_key_file="/home/$mirror/.ssh/authorized_key"
+        printf 'command="/usr/bin/rrsync -ro %s/",restrict ' "$webdir" \
+            > "${auth_key_file}"
+        cat "./$mirror" >> "${auth_key_file}"
+        # Harden: Make it more challenging to overwrite the configuration.
+        chmod -R a-w "/home/$mirror/.ssh"
+    done
+) fi
 
 apt-get clean

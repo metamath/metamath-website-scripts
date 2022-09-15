@@ -240,9 +240,10 @@ fi
 # The directory "mirrors" has 0+ files, where:
 # filename is the fully-qualified domain name (FQDN, e.g., 'cn.metamath.org')
 # content is the SSH public key (.pub file) provided by the mirror to us.
+# We only look at files with "." in them.
 if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
     cd mirrors || exit 1
-    for mirror in *; do
+    for mirror in *.*; do
         echo "Processing mirror $mirror"
         # Create account. We'll just make the username the same as the FQDN.
         adduser --gecos "Mirror $mirror" --disabled-password "$mirror" || true

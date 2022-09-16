@@ -19,11 +19,19 @@ You need someone to modify the Metamath DNS entries (to add that entry).
 
 ### Create ssh public/private keypair
 
-Use ssh to create a public/private keypair; and send us the public key.
+Use `ssh-keygen` to create a public/private keypair, and send us the public key
+(the *.pub file)
+
+We support the following formats:
+
+> dsa | ecdsa | ecdsa-sk | ed25519 | ed25519-sk | rsa
 
 This public key will be copied into the file `mirrors/FQDN`
 in this `metamath-website-scripts` directory, and then the admin will
 rerun `git pull; build-system.sh` on the main us.metamath.org system.
+
+You will need to install the SSH private key on the server running the
+mirror, on the account that will be running rsync via ssh.
 
 ### Periodically run rsyn over ssh
 
@@ -35,6 +43,9 @@ e.g., `cn.metamath.org`):
 ~~~~
 rsync -e ssh -a FQDN@mirror.metamath.org: /var/www/FQDN/
 ~~~~
+
+You may need to add options if you store the SSH private key in a
+nonstandard location or want to do something else special.
 
 We connect to `mirror.metamath.org` instead of `us.metamath.org` so that
 we can later change to a CDN without interfering with anything.

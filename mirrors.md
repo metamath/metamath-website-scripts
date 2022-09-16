@@ -15,7 +15,7 @@ At the time of this writing we have these mirrors under `.metamath.org`:
 
 First, determine the fully-qualified domain name (FQDN) you'll use.
 If you want to create a mirror inside the `.metamath.org` namespace,
-you need someone to modify the Metamath DNS entries (to add that entry).
+You need someone to modify the Metamath DNS entries (to add that entry).
 
 ### Create ssh public/private keypair
 
@@ -29,11 +29,15 @@ rerun `git pull; build-system.sh` on the main us.metamath.org system.
 
 Once installed, set up your system to
 periodically (say 1/hour) run rsync over ssh to acquire the update.
-Your command would probably look like this (replace FQDN with yours):
+Your command would probably look like this (replace each FQDN with yours,
+e.g., `cn.metamath.org`):
 
 ~~~~
-rsync -e ssh -a FQDN@us.metamath.org: /var/www/FQDN/
+rsync -e ssh -a FQDN@mirror.metamath.org: /var/www/FQDN/
 ~~~~
+
+We connect to `mirror.metamath.org` instead of `us.metamath.org` so that
+we can later change to a CDN without interfering with anything.
 
 ## Background
 

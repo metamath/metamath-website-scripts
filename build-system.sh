@@ -265,6 +265,8 @@ if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
         printf 'command="/usr/bin/rrsync -ro %s/",restrict ' "$webdir" \
             > "${auth_key_file}"
         cat "./$mirror" >> "${auth_key_file}"
+        chown -R "$username" "/home/$username/.ssh"
+        chmod -R go-r "/home/$username/.ssh"
         # Harden: Make it more challenging to overwrite the configuration.
         chmod -R a-w "/home/$username/.ssh"
     done

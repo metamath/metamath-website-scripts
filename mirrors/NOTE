@@ -1,0 +1,4 @@
+This directory is for configuring mirrors.
+The filename is the fully-qualified domain name (FQDN) of the mirror.
+The file contents are the SSH public key data used to allow the FQDN
+to log in.

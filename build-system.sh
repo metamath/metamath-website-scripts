@@ -244,13 +244,14 @@ fi
 if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
     cd mirrors || exit 1
     for mirror in *.*; do
-        echo "Processing mirror $mirror"
+        username=$(printf '%s' "$mirror" | tr -cd 'a-z0-9_-')
+        echo "Processing mirror: $mirror username: $username"
         # Create account. We'll just make the username the same as the FQDN.
-        # We "force-badname" because it's simpler to use the same name
-        adduser --force-badname --gecos "Mirror $mirror" \
-            --disabled-password "$mirror" || true
+        # We don't use "force-badname"  - such names can cause various problems
+        adduser --gecos "Mirror $mirror" \
+            --disabled-password "$username" || true
         # Harden system: by default the login shell is "no login"
-        chsh "$mirror" -s /sbin/nologin
+        chsh "$username" -s /sbin/nologin
         # Create symlink of /var/www/$mirror to the main file
         webdir="/var/www/$mirror"
         if [ ! -e "$webdir" ]; then
@@ -258,14 +259,14 @@ if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
         fi
         # Create authorized_key file so remote mirror can log in with ssh key,
         # but only to have read-only access to just our directory.
-        rm -fr "/home/$mirror/.ssh"
-        mkdir -p  "/home/$mirror/.ssh"
-        auth_key_file="/home/$mirror/.ssh/authorized_key"
+        rm -fr "/home/$username/.ssh"
+        mkdir -p  "/home/$username/.ssh"
+        auth_key_file="/home/$username/.ssh/authorized_key"
         printf 'command="/usr/bin/rrsync -ro %s/",restrict ' "$webdir" \
             > "${auth_key_file}"
         cat "./$mirror" >> "${auth_key_file}"
         # Harden: Make it more challenging to overwrite the configuration.
-        chmod -R a-w "/home/$mirror/.ssh"
+        chmod -R a-w "/home/$username/.ssh"
     done
 ) fi
 

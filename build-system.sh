@@ -250,7 +250,7 @@ if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
         adduser --force-badname --gecos "Mirror $mirror" \
             --disabled-password "$mirror" || true
         # Harden system: by default the login shell is "no login"
-        chsh "$mirror" -s /bin/nologin
+        chsh "$mirror" -s /sbin/nologin
         # Create symlink of /var/www/$mirror to the main file
         webdir="/var/www/$mirror"
         if [ ! -e "$webdir" ]; then

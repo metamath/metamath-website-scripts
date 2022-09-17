@@ -246,7 +246,9 @@ if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
     for mirror in *.*; do
         echo "Processing mirror $mirror"
         # Create account. We'll just make the username the same as the FQDN.
-        adduser --gecos "Mirror $mirror" --disabled-password "$mirror" || true
+        # We "force-badname" because it's simpler to use the same name
+        adduser --force-badname --gecos "Mirror $mirror" \
+            --disabled-password "$mirror" || true
         # Harden system: by default the login shell is "no login"
         chsh "$mirror" -s /bin/nologin
         # Create symlink of /var/www/$mirror to the main file

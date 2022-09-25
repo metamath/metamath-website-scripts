@@ -250,8 +250,11 @@ if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
         # We don't use "force-badname"  - such names can cause various problems
         adduser --gecos "Mirror $mirror" \
             --disabled-password "$username" || true
-        # Harden system: by default the login shell is "no login"
-        chsh "$username" -s /sbin/nologin
+        # We can't set the login shell to "no login":
+        # chsh "$username" -s /sbin/nologin
+        # because that produces error “This account is currently not available”.
+        # https://blog.tawfiq.me/this-account-is-currently-not-available-
+        # ssh-login-problem-with-vestacp-new-user/
         # Create symlink of /var/www/$mirror to the main file
         webdir="/var/www/$mirror"
         if [ ! -e "$webdir" ]; then

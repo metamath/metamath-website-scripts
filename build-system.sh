@@ -155,6 +155,12 @@ ufw --force enable
 ufw status
 ufw verbose
 
+# Limit size of logs in /var/log/journal - otherwise it can overwhelm.
+if [ -f /etc/systemd/journald.conf ] && \
+   ! grep -q '^SystemMaxUse=' /etc/systemd/journald.conf ; then
+  echo 'SystemMaxUse=100M' >> /etc/systemd/journald.conf
+fi
+
 # TODO: This assumes we're a mirror that will use rsync to get data
 # elsewhere - we eventually need to NOT assume that.
 

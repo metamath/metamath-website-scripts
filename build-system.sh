@@ -155,14 +155,26 @@ ufw --force enable
 ufw status
 ufw verbose
 
-# Limit size of logs in /var/log/journal - otherwise it can overwhelm.
-if [ -f /etc/systemd/journald.conf ] && \
-   ! grep -q '^SystemMaxUse=' /etc/systemd/journald.conf ; then
-  echo 'SystemMaxUse=100M' >> /etc/systemd/journald.conf
-fi
+# Limit size of logs in /var/log/journal - otherwise it can overwhelm
+# disk space and lead to failures in generating the website. See:
+
+mkdir -p /etc/systemd/journald.conf.d
+echo 'SystemMaxUse=100M' > /etc/systemd/journald.conf.d/size_limit.conf
 
 # TODO: This assumes we're a mirror that will use rsync to get data
 # elsewhere - we eventually need to NOT assume that.
+
+# Set up /root/show_status command so we can remotely see status
+# It's stored in "status.txt" so browsers can easily show it
+cat > /root/show_status <<END
+#/bin/sh
+umask u=rw,go=r
+STATUS="/var/www/$hostname/html/status.txt"
+
+date > "\$STATUS"
+df -H | grep -v tmpfs >> "\$STATUS"
+END
+chmod a+x /root/show_status
 
 # Set up crontabs - note that "certbot renew"
 #     requires that build-linode-cert.sh be run
@@ -175,6 +187,8 @@ cat > ,tmpcron << END
 0 5 * * * updatedb
 # Safety: Forcibly tell ufw to allow ssh, in case we accidentally disable it.
 0 5 * * * ufw allow ssh
+# Record status in a web-accessible file
+30 * * * * /root/show_status
 # This would sync from "rsync.metamath.org":
 # 7 4 * * * /root/mirrorsync.sh
 END

@@ -11,7 +11,7 @@ fail () {
 set -x
 
 if [ "$(whoami)" = 'root' ]; then
-    fail 'DO NOT run this as roo!!'
+    fail 'DO NOT run this as roo!! Execute /root/run-regenerate.sh instead!!'
 fi
 
 start_date="$(date)"

@@ -45,9 +45,20 @@ server {
 		limit_except GET HEAD OPTIONS {
 			deny all;
 		}
+
 		# First attempt to serve request as file, then
 		# as directory, then fall back to displaying a 404.
 		try_files $uri $uri/ =404;
+
+                # Counter clickjacking attacks via framebusting. See:
+                # https://scotthelme.co.uk/hardening-your-http-response-headers/#x-frame-options
+                add_header X-Frame-Options "SAMEORIGIN" always;
+
+                # Enable CORS so web browser apps can request our data.
+                # https://enable-cors.org/server_nginx.html
+                add_header 'Access-Control-Allow-Origin' '*';
+                add_header 'Access-Control-Allow-Methods' 'GET, HEAD, OPTIONS';
+                add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range';
 	}
 
 	# pass PHP scripts to FastCGI server

@@ -1,6 +1,16 @@
 Metamath website scripts
 
-This repository has various scripts to set up a Metamath website.
+This repository has various scripts to set up or reconfigure a Metamath website.
+
+If you just want to change the configuration of the existing Metamath website,
+change this repo's "main" branch. Then log in with `ssh root@us.metamath.org`
+and run (at the home directory `/root`):
+
+~~~~sh
+git pull
+./build-system.sh
+~~~~
+
 
 A website's name must be set up with a DNS registrar.
 If it's *.metamath.org, it must be setup with the DNS registar

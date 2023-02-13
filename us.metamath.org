@@ -40,6 +40,10 @@ server {
 	# Add index.php to the list if you are using PHP
 	index index.html index.htm index.nginx-debian.html;
 
+        # Don't reveal server version# to attacker mass scans.
+        # https://scotthelme.co.uk/hardening-your-http-response-headers/#x-content-type-options
+        server_tokens off;
+
 	location / {
 		# We only serve data, so don't allow anything else.
 		limit_except GET HEAD OPTIONS {
@@ -61,17 +65,20 @@ server {
                 # https://www.nginx.com/blog/http-strict-transport-security-hsts-and-nginx/
                 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
                 # Eventually we'll remove "Report-Only", but let's test it first
-                add_header Content-Security-Policy-Report-Only: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
+                add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" always;
 
                 # Counter clickjacking attacks via framebusting. See:
                 # https://scotthelme.co.uk/hardening-your-http-response-headers/#x-frame-options
                 add_header X-Frame-Options "SAMEORIGIN" always;
 
-                add_header Referrer-Policy "strict-origin-when-cross-origin";
+                add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 
                 # We don't use these, so tell the browser never to allow them in our pages.
-                add_header Permissions-Policy "fullscreen=(), geolocation(), camera=(), microphone=()", bluetooth=(), usb=()";
+                add_header Permissions-Policy "fullscreen=(), geolocation=(), camera=(), microphone=(), bluetooth=(), usb=()" always;
 
+	        # Harden per https://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
+	        add_header X-Content-Type-Options "nosniff" always;
+	        add_header X-XSS-Protection "1; mode=block" always;
 	}
 
 	# pass PHP scripts to FastCGI server
@@ -92,10 +99,6 @@ server {
 	#	deny all;
 	#}
 
-	# Harden per https://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
-	add_header X-Content-Type-Options nosniff;
-	add_header X-XSS-Protection "1; mode=block";
-
 	# TLS certificates managed by Certbot for Let's Encrypt.
 	ssl_certificate /etc/letsencrypt/live/us.metamath.org/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/us.metamath.org/privkey.pem;
@@ -108,15 +111,21 @@ server {
 	listen [::]:80 ;
 	server_name us.metamath.org;
 
-	# Harden per https://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
-	add_header X-Content-Type-Options nosniff;
-	add_header X-XSS-Protection "1; mode=block";
+        # Don't reveal server version# to attacker mass scans.
+        # https://scotthelme.co.uk/hardening-your-http-response-headers/#x-content-type-options
+        server_tokens off;
+
 
 	location / {
 		# We only serve data, so don't allow anything else.
 		limit_except GET HEAD OPTIONS {
 			deny all;
 		}
+
+	        # Harden per https://www.cyberciti.biz/tips/linux-unix-bsd-nginx-webserver-security.html
+	        add_header X-Content-Type-Options "nosniff" always;
+	        add_header X-XSS-Protection "1; mode=block" always;
+
 	}
 
 	# Use 302 for temporary redirect, use 301 to tell people "use HTTPS".

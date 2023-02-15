@@ -1,6 +1,32 @@
 Metamath website scripts
 
-This repository has various scripts to set up a Metamath website.
+This repository has various scripts to set up or reconfigure a Metamath website.
+
+If you want to propose changes to the basic configuration or execution
+processes of a Metamath website runs, please propose a change as a pull request.
+Most of the time you don't want a change in this repository, instead,
+you'll want to propose a change to one of the Metamath database repositories
+(usually the [set.mm repository](https://github.com/metamath/set.mm)),
+Metamath-related programs such as the
+[metamath-exe](https://github.com/metamath/metamath-exe) repository,
+or the
+[metamath-website-seed repository](https://github.com/metamath/metamath-website-seed).
+This metamath-website-scripts repository contains the scripts and configuration
+that load the Metamath databases, runs them through Metamath-related programs,
+and combines them with the metamath-website-seed files to produce
+the working Metamath website.
+
+If you just want to change the configuration of the existing Metamath website,
+and you have the necessary permissions (e.g., David A. Wheeler and
+Mario Carneiro), change this repo's "main" branch.
+Then log in with `ssh root@us.metamath.org`
+and run (at the home directory `/root`):
+
+~~~~sh
+git pull
+./build-system.sh
+~~~~
+
 
 A website's name must be set up with a DNS registrar.
 If it's *.metamath.org, it must be setup with the DNS registar

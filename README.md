@@ -1,20 +1,27 @@
-Metamath website scripts
+# Metamath website scripts
 
 This repository has various scripts to set up or reconfigure a Metamath website.
 
-If you want to propose changes to the basic configuration or execution
-processes of a Metamath website runs, please propose a change as a pull request.
-Most of the time you don't want a change in this repository, instead,
+## You probably don't want to change this repository
+
+Most of the time you don't want a change in this repository. Instead,
 you'll want to propose a change to one of the Metamath database repositories
 (usually the [set.mm repository](https://github.com/metamath/set.mm)),
 Metamath-related programs such as the
 [metamath-exe](https://github.com/metamath/metamath-exe) repository,
 or the
 [metamath-website-seed repository](https://github.com/metamath/metamath-website-seed).
+
+If you want to propose changes to the basic configuration or execution
+processes that a Metamath website runs, this *is* the right repository
+to change. Please propose a change as a pull request.
+
 This metamath-website-scripts repository contains the scripts and configuration
 that load the Metamath databases, runs them through Metamath-related programs,
 and combines them with the metamath-website-seed files to produce
 the working Metamath website.
+
+## How to apply changes made here
 
 If you just want to change the configuration of the existing Metamath website,
 and you have the necessary permissions (e.g., David A. Wheeler and
@@ -27,6 +34,19 @@ git pull
 ./build-system.sh
 ~~~~
 
+## What to change
+
+Here are some of the files you might want to change:
+
+* `us.metamath.org` - the configuration file for the nginx web server.
+* `build-system.sh` - shell script run by root that creates/changes
+  system configuration
+* `regenerate-website.sh` - shell script run by user "generator" every day
+  to regenerate the website contents
+
+## Setting up for the first time
+
+See `INSTALL.md` for installation instructions.
 
 A website's name must be set up with a DNS registrar.
 If it's *.metamath.org, it must be setup with the DNS registar
@@ -38,9 +58,7 @@ We currently have domainmonger set up so any request to
 we could just redirect to the relevant us.metamath.org page
 if that would be easier.
 
-See `INSTALL.md` for installation instructions.
-
-File `us.metamath.org` file is the configuration file for the nginx web server.
+## Principles
 
 These scripts implement the following principles:
 

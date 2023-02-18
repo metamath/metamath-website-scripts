@@ -64,8 +64,7 @@ server {
                 # https://securityheaders.com/?q=us.metamath.org&followRedirects=on
                 # https://www.nginx.com/blog/http-strict-transport-security-hsts-and-nginx/
                 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-                # Eventually we'll remove "Report-Only", but let's test it first
-                add_header Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" always;
+                add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" always;
 
                 # Counter clickjacking attacks via framebusting. See:
                 # https://scotthelme.co.uk/hardening-your-http-response-headers/#x-frame-options

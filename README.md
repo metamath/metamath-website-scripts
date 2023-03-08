@@ -58,9 +58,9 @@ We currently have domainmonger set up so any request to
 we could just redirect to the relevant us.metamath.org page
 if that would be easier.
 
-## Principles
+## Approach
 
-These scripts implement the following principles:
+These scripts implement the following approach:
 
 * [Infastructure as Code](https://www.redhat.com/en/topics/automation/what-is-infrastructure-as-code-iac). To configure a system, you edit a version-controlled script (here) and run it. That way, you can easily recreate a system on the same or a different hosting environment.
 * Idempotent. You can re-run configuration scripts as many times as you want without harm (they'll just change the system to implement the intended configuration).

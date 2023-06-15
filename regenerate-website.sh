@@ -106,6 +106,7 @@ y)
         mmset.raw.html \
         mmtopstr.html \
         mmzfcnd.raw.html \
+        mm-j-commands.html \
         "$METAMATHSITE/mpegif"
     )
 

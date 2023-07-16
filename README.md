@@ -54,7 +54,7 @@ for metamath.org.
 (At the time of this writing, we use domainmonger as our registar).
 We currently have domainmonger set up so any request to
 "metamath.org" or "www.metamath.org" is redirected to
-`http://us.metamath.org/mm.html`, so that people can find the mirrors;
+<https://us.metamath.org/mm.html>, so that people can find the mirrors;
 we could just redirect to the relevant us.metamath.org page
 if that would be easier.
 

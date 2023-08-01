@@ -40,14 +40,15 @@ y)
     rm -fr "$METAMATHSITE/"
     mkdir -p "$METAMATHSITE/"
 
-    # Load the metamath-website-seed as a starting point.
+    # Load the metamath-website-seed repo into $METAMATHSITE
+    # to use as our starting point.
     (
     cd "$METAMATHSITE"
     SEED='https://api.github.com/repos/metamath/metamath-website-seed/tarball'
     curl -L "$SEED" | tar xz --strip=1
     )
 
-    # Download database information.
+    # Download database information into "~/repos".
     # We once downloaded set.mm using git, but that creates a *huge* .git
     # directory we don't need. Downloading *just* the tarball from GitHub
     # is actually quite fast, so we'll just do it every time if we

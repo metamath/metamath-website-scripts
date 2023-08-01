@@ -20,7 +20,6 @@ start_date="$(date)"
 # Set environment variables to skip some steps:
 : ${REGENERATE_DOWNLOAD:=y}
 : ${REGENERATE_GENERATE:=y}
-: ${REGENERATE_PUSH:=y}
 : ${COPY_TO_WEBPAGE:=y}
 
 # Previously we generated all files to

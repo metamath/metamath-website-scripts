@@ -1,6 +1,9 @@
 #!/bin/sh
 # regenerate-website - download & regenerate the Metamath website contents
 
+# Usage:
+# REGENERATE_DOWNLOAD=n REGENERATE_GENERATE=y COPY_TO_WEBPAGE=n ./regenerate-website
+
 # Print the message $1 and exit with failure.
 fail () {
   printf '%s\n' "$1" >&2
@@ -18,9 +21,9 @@ start_date="$(date)"
 
 # This script by default downloads, generates, and pushes its results.
 # Set environment variables to skip some steps:
-: ${REGENERATE_DOWNLOAD:=y}
-: ${REGENERATE_GENERATE:=y}
-: ${COPY_TO_WEBPAGE:=y}
+: "${REGENERATE_DOWNLOAD:=y}"
+: "${REGENERATE_GENERATE:=y}"
+: "${COPY_TO_WEBPAGE:=y}"
 
 # Previously we generated all files to
 # </opt/dts/mmmaster/metamathsite/>
@@ -37,7 +40,7 @@ case "${REGENERATE_DOWNLOAD}" in
 y)
     # To ensure that we start from a clean slate, we'll first
     # REMOVE the "$METAMATHSITE" directory.
-    rm -fr "$METAMATHSITE/"
+    rm -fr "${METAMATHSITE:?Must set METAMATHSITE}/"
     mkdir -p "$METAMATHSITE/"
 
     # Load the metamath-website-seed repo into $METAMATHSITE

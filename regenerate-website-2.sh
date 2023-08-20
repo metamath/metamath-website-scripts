@@ -93,9 +93,6 @@ y)
     mkdir -p "$METAMATHSITE/metamath/"
     mkdir -p "$METAMATHSITE/mpegif/"
 
-    # Rebuild metamath.exe, so we're certain to use the latest one.
-    './repos/set.mm/scripts/build-metamath'
-
     # Copy databases in.
     cp -p repos/set.mm/*.mm "$METAMATHSITE/metamath/"
 

@@ -46,7 +46,7 @@ y)
     # Load the metamath-website-seed repo into $METAMATHSITE
     # to use as our starting point.
     (
-    cd "$METAMATHSITE"
+    cd "$METAMATHSITE" || exit 1
     SEED='https://api.github.com/repos/metamath/metamath-website-seed/tarball'
     curl -L "$SEED" | tar xz --strip=1
     )
@@ -60,7 +60,7 @@ y)
     # cd repos; git clone https://github.com/metamath/set.mm.git
     mkdir -p repos/set.mm
     (
-        cd repos/set.mm
+        cd repos/set.mm || exit 1
         curl -L https://api.github.com/repos/metamath/set.mm/tarball | \
             tar xz --strip=1
     )
@@ -1677,7 +1677,7 @@ y)
     mkdir -p "$METAMATHSITE/mpegif/"
     # Copy .html / .raw.html files for mpe (set.mm)
     (
-      cd repos/set.mm
+      cd repos/set.mm || exit 1
       cp -p \
         mmbiblio.html \
         mmcomplex.raw.html \
@@ -1699,7 +1699,7 @@ y)
     # Not handled:
     # /opt/dts/mmmaster/metamathsite/ilegif/mmbiblio_IL.html
     (
-      cd repos/set.mm
+      cd repos/set.mm || exit 1
       cp -p \
         mmil.raw.html \
         mmrecent_IL.html \

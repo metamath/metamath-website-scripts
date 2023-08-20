@@ -2,7 +2,8 @@
 # regenerate-website - download & regenerate the Metamath website contents
 
 # Usage:
-# REGENERATE_DOWNLOAD=n REGENERATE_GENERATE=y COPY_TO_WEBPAGE=n ./regenerate-website
+# REGENERATE_DOWNLOAD=n REGENERATE_COMPILE=n \
+# REGENERATE_GENERATE=y COPY_TO_WEBPAGE=n ./regenerate-website
 
 # Print the message $1 and exit with failure.
 fail () {
@@ -22,6 +23,7 @@ start_date="$(date)"
 # This script by default downloads, generates, and pushes its results.
 # Set environment variables to skip some steps:
 : "${REGENERATE_DOWNLOAD:=y}"
+: "${REGENERATE_COMPILE:=y}"
 : "${REGENERATE_GENERATE:=y}"
 : "${COPY_TO_WEBPAGE:=y}"
 
@@ -75,6 +77,16 @@ y)
 esac
 
 # Regenerate website, now that we've downloaded all the external files.
+
+case "${REGENERATE_COMPILE}" in
+y)
+    mkdir -p "$METAMATHSITE/metamath/"
+    mkdir -p "$METAMATHSITE/mpegif/"
+
+    # Rebuild metamath.exe, so we're certain to use the latest one.
+    './repos/set.mm/scripts/build-metamath'
+;;
+esac
 
 case "${REGENERATE_GENERATE}" in
 y)

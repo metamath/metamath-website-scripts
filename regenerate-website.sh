@@ -84,6 +84,15 @@ y)
 
     # Copy databases in.
     cp -p repos/set.mm/*.mm "$METAMATHSITE/metamath/"
+    # Copy the .raw.html files from repos/set.mm
+    cp -p repos/set.mm/mmil.raw.html "$METAMATHSITE/ilegif/mmil.raw.html"
+    cp -p repos/set.mm/mmcomplex.raw.html "$METAMATHSITE/mpegif/mmcomplex.raw.html"
+    cp -p repos/set.mm/mmdeduction.raw.html "$METAMATHSITE/mpegif/mmdeduction.raw.html"
+    cp -p repos/set.mm/mmfrege.raw.html "$METAMATHSITE/mpegif/mmfrege.raw.html"
+    cp -p repos/set.mm/mmnatded.raw.html "$METAMATHSITE/mpegif/mmnatded.raw.html"
+    cp -p repos/set.mm/mmset.raw.html "$METAMATHSITE/mpegif/mmset.raw.html"
+    cp -p repos/set.mm/mmzfcnd.raw.html "$METAMATHSITE/mpegif/mmzfcnd.raw.html"
+    cp -p reops/set.mm/mmnf.raw.html "$METAMATHSITE/nfegif/mmnf.raw.html"
 
     cd "$METAMATHSITE"
     sh -x "$HOME/install.sh" >install.log 2>&1

@@ -4,25 +4,6 @@
 # set -eu
 set -x
 
-# remove hidden files at the top level
-find . -name '.*' -type f -exec rm '{}' \;
-
-# build metamath
-cd metamath
-  ./build.sh
-
-  # also cross-compile for windows
-  cd build
-    make clean
-    # TODO(Mario): 64 bit win is broken
-    # make CC=x86_64-w64-mingw32-gcc
-    make CC=i686-w64-mingw32-gcc
-    mv src/metamath.exe ..
-  cd ..
-
-  rm -rf autom4te.cache aclocal.m4 build config config.h.in configure **/Makefile.in
-cd ..
-
 # prepare GIF census
 ls symbols > symbols.tmp
 

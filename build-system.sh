@@ -156,7 +156,8 @@ ufw status
 ufw verbose
 
 # Limit size of logs in /var/log/journal - otherwise it can overwhelm
-# disk space and lead to failures in generating the website. See:
+# disk space and lead to failures in generating the website.
+# See metamath/set.mm#2948
 
 mkdir -p /etc/systemd/journald.conf.d
 echo 'SystemMaxUse=100M' > /etc/systemd/journald.conf.d/size_limit.conf
@@ -200,60 +201,60 @@ install_cert="$(get_setting install_cert \
 
 case "$install_cert" in
 y)
-    # Customize for this machine
-    poc_email="$(get_setting poc_email \
-      "What's the email POC for ${webname}?" '.+@.+' '')"
+  # Customize for this machine
+  poc_email="$(get_setting poc_email \
+    "What's the email POC for ${webname}?" '.+@.+' '')"
 
-    certbot run -n --nginx --agree-tos --redirect -m "${poc_email}" \
-                -d "${webname}"
+  certbot run -n --nginx --agree-tos --redirect -m "${poc_email}" \
+              -d "${webname}"
 
-    # certbot renew --force-renewal
+  # certbot renew --force-renewal
 
-    # Expected results:
-    #  - Congratulations! Your certificate and chain have been saved at:
-    #    /etc/letsencrypt/live/linode2.metamath.org/fullchain.pem
-    #    Your key file has been saved at:
-    #    /etc/letsencrypt/live/linode2.metamath.org/privkey.pem
-    #    Your cert will expire on 2021-09-18. To obtain a new or tweaked
-    #    version of this certificate in the future, simply run certbot again
-    #    with the "certonly" option. To non-interactively renew *all* of
-    #    your certificates, run "certbot renew"
-    #  - Your account credentials have been saved in your Certbot
-    #    configuration directory at /etc/letsencrypt. You should make a
-    #    secure backup of this folder now. This configuration directory will
-    #    also contain certificates and private keys obtained by Certbot so
-    #    making regular backups of this folder is ideal.
+  # Expected results:
+  #  - Congratulations! Your certificate and chain have been saved at:
+  #    /etc/letsencrypt/live/linode2.metamath.org/fullchain.pem
+  #    Your key file has been saved at:
+  #    /etc/letsencrypt/live/linode2.metamath.org/privkey.pem
+  #    Your cert will expire on 2021-09-18. To obtain a new or tweaked
+  #    version of this certificate in the future, simply run certbot again
+  #    with the "certonly" option. To non-interactively renew *all* of
+  #    your certificates, run "certbot renew"
+  #  - Your account credentials have been saved in your Certbot
+  #    configuration directory at /etc/letsencrypt. You should make a
+  #    secure backup of this folder now. This configuration directory will
+  #    also contain certificates and private keys obtained by Certbot so
+  #    making regular backups of this folder is ideal.
 
-    # We've run the initial installer, so assume we won't do it again.
-    set_setting 'install_cert' n
-    ;;
+  # We've run the initial installer, so assume we won't do it again.
+  set_setting 'install_cert' n
+  ;;
 esac
 
 # If we're *generating* the pages (not just serving them), set that up.
 if [ "$GENERATE_WEBSITE" = 'y' ]; then
-    # Need these to rebuild metamath.exe
-    apt-get -y install gcc rlwrap autoconf
+  # Need these to rebuild metamath.exe
+  apt-get -y install gcc rlwrap autoconf mingw-w64
 
-    # Install what you need to rebuild LaTex things for website
-    apt-get -y install texlive
+  # Install what you need to rebuild LaTex things for website
+  apt-get -y install texlive
 
-    # Set up "generator" user to regenerate website
-    adduser --gecos 'Metamath website generator' --disabled-password generator \
-      || true
+  # Set up "generator" user to regenerate website
+  adduser --gecos 'Metamath website generator' --disabled-password generator \
+    || true
 
-    # Copy the top-level regeneration script so "generator" will run it.
-    cp -p /root/regenerate-website.sh /home/generator/
+  # Copy the top-level regeneration script so "generator" will run it.
+  cp -p /root/regenerate-website.sh /home/generator/
 
-    # Chang ownership so generator can update the website contents
-    chown -R generator.generator "/var/www/${webname}/html"
+  # Chang ownership so generator can update the website contents
+  chown -R generator.generator "/var/www/${webname}/html"
 
-    # Create a crontab entry for "generator" to regenerate daily.
-    crontab -u generator - <<DONE
+  # Create a crontab entry for "generator" to regenerate daily.
+  crontab -u generator - <<DONE
 0 4 * * * /home/generator/regenerate-website.sh
 DONE
 
-    # Do the initial site load (will take a while) - or just wait for cron
-    # echo 'You may run this down to force resync: /root/mirrorsync.sh'
+  # Do the initial site load (will take a while) - or just wait for cron
+  # echo 'You may run this down to force resync: /root/mirrorsync.sh'
 fi
 
 # If we're *supporting* mirrors logging in to us.
@@ -262,37 +263,37 @@ fi
 # content is the SSH public key (.pub file) provided by the mirror to us.
 # We only look at files with "." in them.
 if [ "$SUPPORT_MIRRORS" = 'y' ]; then (
-    cd mirrors || exit 1
-    for mirror in *.*; do
-        username=$(printf '%s' "$mirror" | tr -cd 'a-z0-9_-')
-        echo "Processing mirror: $mirror username: $username"
-        # Create account. We'll just make the username the same as the FQDN.
-        # We don't use "force-badname"  - such names can cause various problems
-        adduser --gecos "Mirror $mirror" \
-            --disabled-password "$username" || true
-        # We can't set the login shell to "no login":
-        # chsh "$username" -s /sbin/nologin
-        # because that produces error “This account is currently not available”.
-        # https://blog.tawfiq.me/this-account-is-currently-not-available-
-        # ssh-login-problem-with-vestacp-new-user/
-        # Create symlink of /var/www/$mirror to the main file
-        webdir="/var/www/$mirror"
-        if [ ! -e "$webdir" ]; then
-            ln -s "/var/www/us.metamath.org" "$webdir"
-        fi
-        # Create authorized_key file so remote mirror can log in with ssh key,
-        # but only to have read-only access to just our directory.
-        rm -fr "/home/$username/.ssh"
-        mkdir -p  "/home/$username/.ssh"
-        auth_key_file="/home/$username/.ssh/authorized_key"
-        printf 'command="/usr/bin/rrsync -ro %s/",restrict ' "$webdir" \
-            > "${auth_key_file}"
-        cat "./$mirror" >> "${auth_key_file}"
-        chown -R "$username" "/home/$username/.ssh"
-        chmod -R go-r "/home/$username/.ssh"
-        # Harden: Make it more challenging to overwrite the configuration.
-        chmod -R a-w "/home/$username/.ssh"
-    done
+  cd mirrors || exit 1
+  for mirror in *.*; do
+    username=$(printf '%s' "$mirror" | tr -cd 'a-z0-9_-')
+    echo "Processing mirror: $mirror username: $username"
+    # Create account. We'll just make the username the same as the FQDN.
+    # We don't use "force-badname"  - such names can cause various problems
+    adduser --gecos "Mirror $mirror" \
+      --disabled-password "$username" || true
+    # We can't set the login shell to "no login":
+    # chsh "$username" -s /sbin/nologin
+    # because that produces error “This account is currently not available”.
+    # https://blog.tawfiq.me/this-account-is-currently-not-available-
+    # ssh-login-problem-with-vestacp-new-user/
+    # Create symlink of /var/www/$mirror to the main file
+    webdir="/var/www/$mirror"
+    if [ ! -e "$webdir" ]; then
+      ln -s "/var/www/us.metamath.org" "$webdir"
+    fi
+    # Create authorized_key file so remote mirror can log in with ssh key,
+    # but only to have read-only access to just our directory.
+    rm -fr "/home/$username/.ssh"
+    mkdir -p  "/home/$username/.ssh"
+    auth_key_file="/home/$username/.ssh/authorized_key"
+    printf 'command="/usr/bin/rrsync -ro %s/",restrict ' "$webdir" \
+      > "${auth_key_file}"
+    cat "./$mirror" >> "${auth_key_file}"
+    chown -R "$username" "/home/$username/.ssh"
+    chmod -R go-r "/home/$username/.ssh"
+    # Harden: Make it more challenging to overwrite the configuration.
+    chmod -R a-w "/home/$username/.ssh"
+  done
 ) fi
 
 apt-get clean

@@ -101,8 +101,7 @@ y)
   cp -r repos/symbols/symbols www/symbols
 
   cd www
-    ../../metamath-website-scripts/build-website.sh 2>&1 | tee ../install.log
-    # sh -x ../build-website.sh >install.log 2>&1
+    sh -x ../build-website.sh >install.log 2>&1
   cd ..
 ;;
 esac

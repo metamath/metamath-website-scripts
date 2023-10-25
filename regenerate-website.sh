@@ -49,12 +49,12 @@ y)
       curl -L https://api.github.com/repos/$1/$2/tarball/$3 | tar xz --strip=1
     cd ../..
   }
-  download_repo metamath set.mm mmrecent
+  download_repo metamath set.mm develop
   # download_repo metamath metamath-knife main
   # download_repo digama0 mm-web-rs master
-  download_repo metamath metamath-website-seed rm_symbols
+  download_repo metamath metamath-website-seed main
   download_repo metamath metamath-exe master
-  download_repo metamath symbols rm_readme
+  download_repo metamath symbols main
 
   mkdir -p repos/metamath-book/
   for file in narrow normal; do
@@ -101,7 +101,8 @@ y)
   cp -r repos/symbols/symbols www/symbols
 
   cd www
-    sh -x ../build-website.sh >install.log 2>&1
+    ../../metamath-website-scripts/build-website.sh 2>&1 | tee ../install.log
+    # sh -x ../build-website.sh >install.log 2>&1
   cd ..
 ;;
 esac

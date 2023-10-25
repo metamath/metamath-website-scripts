@@ -244,6 +244,7 @@ if [ "$GENERATE_WEBSITE" = 'y' ]; then
 
   # Copy the top-level regeneration script so "generator" will run it.
   cp -p /root/regenerate-website.sh /home/generator/
+  cp -p /root/build-website.sh /home/generator/
 
   # Chang ownership so generator can update the website contents
   chown -R generator.generator "/var/www/${webname}/html"

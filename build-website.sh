@@ -15,6 +15,7 @@ cp ../repos/set.mm/mmbiblio.raw.html \
    ../repos/set.mm/mmfrege.raw.html \
    ../repos/set.mm/mmhil.html \
    ../repos/set.mm/mmnatded.raw.html \
+   ../repos/set.mm/mmrecent.raw.html \
    ../repos/set.mm/mmset.raw.html \
    ../repos/set.mm/mmzfcnd.raw.html \
    ../repos/set.mm/mm-j-commands.html mpegif
@@ -52,10 +53,12 @@ build_db () {
 
   # look for any images referenced in the .mm file and import them from symbols/
   sed -n "s/^.*<IMG SRC=['\"]\([^'\"]*\)['\"].*$/\\1/p" < $mm | sort -u > 1.tmp
+  set +x # this loop is too noisy for the log
   for i in `echo mm.gif | comm -23 1.tmp - | comm -12 - symbols.tmp`; do
     ln -rs symbols/$i ${db}gif/$i
     add_fake_gif $i
   done
+  set -x
   rm 1.tmp
 
   for k in gif uni; do
@@ -161,9 +164,11 @@ cd tmp
     # absolute URLs so that it won't have broken links
     cp -r ../$dir $dir
     cd $dir
+      set +x # this loop is too noisy for the log
       for i in *.html; do
         sed -e 's/HREF=\"..\//HREF=\"http:\/\/us.metamath.org\//g' < ../../$dir/$i > $i
       done
+      set -x
     cd ..
 
     tar -cjf ../downloads/$dir.tar.bz2 $dir

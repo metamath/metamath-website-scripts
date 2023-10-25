@@ -51,15 +51,28 @@ build_db () {
     for i in *.html; do rm ../${db}uni/$i; cp $i ../${db}uni; done
   cd ..
 
-  # look for any images referenced in the .mm file and import them from symbols/
-  sed -n "s/^.*<IMG SRC=['\"]\([^'\"]*\)['\"].*$/\\1/p" < $mm | sort -u > 1.tmp
+  # look for any images referenced in the html files and import them from symbols/
+  for file in ${db}gif/*.html; do
+    sed -n "s/^.*<IMG SRC=['\"]\([^'\"]*\)['\"].*$/\\1/p" < $file >> 1.tmp
+  done
+  sort -u < 1.tmp > 2.tmp
   set +x # this loop is too noisy for the log
-  for i in `echo mm.gif | comm -23 1.tmp - | comm -12 - symbols.tmp`; do
+  for i in `echo mm.gif | comm -23 2.tmp - | comm -12 - symbols.tmp`; do
+    ln -rs symbols/$i ${db}gif/$i
+    ln -rs symbols/$i ${db}uni/$i
+  done
+  set -x
+
+  # look for any images referenced in the .mm file and import them from symbols/
+  sed -n "s/^.*<IMG SRC=['\"]\([^'\"]*\)['\"].*$/\\1/p" < $mm | sort -u > 2.tmp
+  echo mm.gif >> 1.tmp
+  set +x # this loop is too noisy for the log
+  for i in `sort -u < 1.tmp | comm -23 2.tmp - | comm -12 - symbols.tmp`; do
     ln -rs symbols/$i ${db}gif/$i
     add_fake_gif $i
   done
   set -x
-  rm 1.tmp
+  rm 1.tmp 2.tmp
 
   for k in gif uni; do
     # basic files

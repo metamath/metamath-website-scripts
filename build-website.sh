@@ -141,6 +141,7 @@ cp ../repos/metamath-book/narrow.sty ../repos/metamath-book/normal.sty latex
 cd latex
   for file in finiteaxiom megillaward2003 megillaward2004; do
     pdflatex $file
+    pdflatex $file
     mv $file.pdf ../downloads
   done
   rm *.aux *.sty # keep *.log
